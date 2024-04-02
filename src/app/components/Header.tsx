@@ -1,9 +1,14 @@
-import React from 'react'
+import Link from "next/link";
 
-function Header() {
+export default function Header() {
   return (
-    <h2>Header</h2>
-  )
+    <div className="h-10v flex items-center max-w-7xl mx-auto">
+      <Link
+        href="/"
+        className="text-4xl text-[#0aff60] ml-5  font-logo font-bold "
+      >
+        FCGG
+      </Link>
+    </div>
+  );
 }
-
-export default Header
