@@ -1,5 +1,5 @@
 import divisionTypes from "../../data/divisionType.json";
-import MatchList from "./../../components/MatchList";
+import MatchList from "@/components/MatchList";
 import { matchDetailsConvert } from "@/utils/matchDetailsConvert";
 const BASE_URL = `https://open.api.nexon.com/fconline/v1`;
 const Static_URL = "https://open.api.nexon.com/static/fconline";
