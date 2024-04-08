@@ -61,7 +61,7 @@ export default function MatchDetail({ matchData }: MatchDetailProps) {
           <div className="">
             <span>{homeTeam.nickname}</span>
           </div>
-          <div className="">
+          <div className="w-[10%]">
             <span>{homeTeam.shoot.goalTotal}</span>
             <span className="mx-1 rounded">:</span>
             <span>{awayTeam.shoot.goalTotal}</span>
