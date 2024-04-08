@@ -10,6 +10,9 @@ Nextjs,Tailwind
 
 2023.10 / 약 3주
 
+## Updated
+2024.03.25 ~ 2024 04.08 (Reactjs에서 Nextjs로 변경)
+
 ## 사용 api
 
 https://openapi.nexon.com/game/fconline/
