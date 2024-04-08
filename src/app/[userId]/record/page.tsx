@@ -1,7 +1,6 @@
-import matchTypes from "../../data/matchType.json";
 import divisionTypes from "../../data/divisionType.json";
-import MatchList from "./../../components/matchList";
-
+import MatchList from "./../../components/MatchList";
+import { matchDetailsConvert } from "@/utils/matchDetailsConvert";
 const BASE_URL = `https://open.api.nexon.com/fconline/v1`;
 const Static_URL = "https://open.api.nexon.com/static/fconline";
 const API_KEY =
@@ -26,7 +25,12 @@ async function getMatchList(matchtype: string, ouid: string) {
     }
   );
   const data = await response.json();
-  console.log(data[0]);
+  return data;
+}
+async function getAllMatchDetails(matchIds: string[]) {
+  const promises = matchIds.map((matchId) => getMatchDetail(matchId));
+  const matchDetails = await Promise.all(promises);
+  return matchDetails;
 }
 async function getBasicInfo(ouid: string) {
   const basicResponse = await fetch(`${BASE_URL}/user/basic?ouid=${ouid}`, {
@@ -35,17 +39,19 @@ async function getBasicInfo(ouid: string) {
     },
   });
   const data = await basicResponse.json();
+
   return data;
 }
-async function getMatchDetail(matchId: string) {
+async function getMatchDetail(matchIds: string) {
   const matchDetailResponse = await fetch(
-    `${BASE_URL}/match-detail?matchid=${matchId}`,
+    `${BASE_URL}/match-detail?matchid=${matchIds}`,
     {
       headers: {
         "x-nxopen-api-key": API_KEY,
       },
     }
   );
+
   const data = await matchDetailResponse.json();
   return data;
 }
@@ -79,7 +85,7 @@ export default async function RecordPage({
   const basicInfo = await getBasicInfo(ouid);
   const maxDivision = await getMaxDivision(ouid);
   const matchIds = await getMatchList(matchtype, ouid);
-  console.log(matchIds);
+  const matchDetails = await getAllMatchDetails(matchIds);
 
   const findItem = maxDivision.find(
     (item: IMaxdivision) => item.matchType === parseInt(matchtype)
@@ -102,6 +108,20 @@ export default async function RecordPage({
     : "날짜 정보 없음";
   if (!ouid) return <h2>유저 정보를 찾을 수 없습니다. 다시 검색해주세요</h2>;
   if (!findItem) return <h2>경기 정보를 찾을 수 없습니다.</h2>;
+  const transformedMatchDetails = matchDetails.map((match) => {
+    const homeTeam = matchDetailsConvert(match, 0);
+    const awayTeam = matchDetailsConvert(match, 1);
+
+    return {
+      matchId: match.matchId,
+      matchDate: match.matchDate,
+      matchType: match.matchType,
+      matchDetails: match.matchDetails,
+      homeTeam,
+      awayTeam,
+    };
+  });
+
   return (
     <>
       <section className="bg-[#34495e] rounded max-w-7xl flex items-center justify-between mx-auto p-2">
@@ -119,7 +139,11 @@ export default async function RecordPage({
           <img src={divisionIcon} className="w-15 h-15 mx-5" />
         </div>
       </section>
-      <MatchList selectedMatchType={matchtype} userId={userId} />
+      <MatchList
+        selectedMatchType={matchtype}
+        userId={userId}
+        matchDetails={transformedMatchDetails}
+      />
     </>
   );
 }

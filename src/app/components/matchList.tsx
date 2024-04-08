@@ -1,23 +1,34 @@
 "use client";
 import { useRouter } from "next/navigation";
+import MatchDetail from "./MatchDetail";
+import { useState } from "react";
+import { TeamMatchInfo } from "@/utils/matchDetailsConvert";
 
 interface MatchListProps {
   selectedMatchType: string;
   userId: string;
+  matchDetails: TeamMatchInfo[];
 }
-export default function matchList({
+
+export default function MatchList({
   selectedMatchType,
   userId,
+  matchDetails,
 }: MatchListProps) {
   const router = useRouter();
+  const [visibleMatches, setVisibleMatches] = useState(5);
 
-  const selectedMatch = (type: string) => selectedMatchType === type.toString();
+  const loadMoreMatches = () => {
+    setVisibleMatches((prevVisible) => prevVisible + 10);
+  };
+
+  const currentMatches = matchDetails.slice(0, visibleMatches);
 
   return (
-    <div>
+    <div className="mx-auto max-w-7xl">
       <button
         className={`m-2 p-2 rounded ${
-          selectedMatch("50")
+          selectedMatchType === "50"
             ? "bg-green-500 text-white"
             : "bg-gray-200 text-gray-800"
         }`}
@@ -25,10 +36,9 @@ export default function matchList({
       >
         공식경기
       </button>
-
       <button
         className={`m-2 p-2 rounded ${
-          selectedMatch("52")
+          selectedMatchType === "52"
             ? "bg-green-500 text-white"
             : "bg-gray-200 text-gray-800"
         }`}
@@ -36,6 +46,28 @@ export default function matchList({
       >
         감독모드
       </button>
+      {currentMatches.map((match, index) => (
+        <div key={index}>
+          <MatchDetail
+            matchData={{
+              homeTeam: match.homeTeam,
+              awayTeam: match.awayTeam,
+              matchId: match.matchId,
+              matchDate: match.matchDate,
+              matchType: match.matchType,
+              matchInfo: match.matchDetails,
+            }}
+          />
+        </div>
+      ))}
+      {visibleMatches < matchDetails.length && (
+        <button
+          onClick={loadMoreMatches}
+          className="load-more bg-[#34495e] w-full p-2 rounded"
+        >
+          더 보기
+        </button>
+      )}
     </div>
   );
 }
