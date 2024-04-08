@@ -58,15 +58,15 @@ export default function MatchDetail({ matchData }: MatchDetailProps) {
           <span className={`${homeBgColor} p-1 rounded`}>
             {homeTeam.matchDetail.matchResult}
           </span>
-          <div className="">
+          <div className="w-[20%] text-center">
             <span>{homeTeam.nickname}</span>
           </div>
-          <div className="w-[10%] ">
+          <div className="w-[20%] text-center ">
             <span>{homeTeam.shoot.goalTotal}</span>
             <span className="mx-1 rounded">:</span>
             <span>{awayTeam.shoot.goalTotal}</span>
           </div>
-          <div>
+          <div className="w-[20%] text-center">
             <span className="">{awayTeam.nickname}</span>
           </div>
           <span className={`${awayBgColor}   p-1 rounded`}>
