@@ -6,14 +6,15 @@ export default function Home() {
   const router = useRouter();
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const userId = (
-      event.currentTarget.elements.namedItem("userId") as HTMLInputElement
-    ).value;
-    router.push(`/${userId}/record?matchtype=50`);
+    const inputElement = event.currentTarget.elements.namedItem(
+      "userId"
+    ) as HTMLInputElement;
+    const trimmedUserId = inputElement.value.trim();
+    router.push(`/${trimmedUserId}/record?matchtype=50`);
   };
 
   return (
-    <div
+    <section
       className="bg-white rounded-lg shadow p-6 w-6/12 flex items-center justify-center mx-auto"
       style={{
         minWidth: 640,
@@ -37,6 +38,6 @@ export default function Home() {
           </button>
         </div>
       </form>
-    </div>
+    </section>
   );
 }

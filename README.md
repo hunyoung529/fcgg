@@ -10,13 +10,20 @@ Nextjs,Tailwind
 
 2023.10 / 약 3주
 
-## Updated
-2024.03.25 ~ 2024 04.08 (Reactjs에서 Nextjs로 변경)
+## UPDATED
+
+2024.03.27~2024.04.08
+
+- Reactjs에서 Nextjs로 리뉴얼
+
+  2024.04.10
+
+- 세부통계 완료
+
+## TO BE UPDATED
+
+-스쿼드 포메이션, 선수 세부스탯, 평균 통계
 
 ## 사용 api
 
 https://openapi.nexon.com/game/fconline/
-
-## 추후 추가될 내용
-
-세부통계, 스쿼드 포메이션, 선수 세부 스탯 - 4월10일 완료예정

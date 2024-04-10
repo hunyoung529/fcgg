@@ -1,10 +1,11 @@
 import divisionTypes from "../../data/divisionType.json";
-import MatchList from "@/components/MatchList";
-import { matchDetailsConvert } from "@/utils/matchDetailsConvert";
+import MatchList from "./../../components/MatchList";
+import { matchDetailsConvert } from "../../utils/matchDetailsConvert";
+
 const BASE_URL = `https://open.api.nexon.com/fconline/v1`;
 const Static_URL = "https://open.api.nexon.com/static/fconline";
 const API_KEY =
-  "test_4f57153bb99a388e2ea5b693777f054e010263de4910d93b6b5422da86f93d6864855ef28173c38e8cfeb0c4fa1ed4aa";
+  "live_4f57153bb99a388e2ea5b693777f054ee2ecec7dcc449c82b1c5347c89c84e86d6de6ab228a209130a4963ede623c0bc";
 
 async function getOuid(nickname: string) {
   const response = await fetch(`${BASE_URL}/id?nickname=${nickname}`, {
@@ -32,6 +33,7 @@ async function getAllMatchDetails(matchIds: string[]) {
   const matchDetails = await Promise.all(promises);
   return matchDetails;
 }
+
 async function getBasicInfo(ouid: string) {
   const basicResponse = await fetch(`${BASE_URL}/user/basic?ouid=${ouid}`, {
     headers: {
