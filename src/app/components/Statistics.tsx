@@ -85,7 +85,7 @@ export default function Statistics({ data }: StatisticsProps) {
   ];
 
   return (
-    <div className="">
+    <div className="text-white">
       <p className="text-center mt-5 ">공 점유율</p>
       <div className="flex h-2 rounded-xl overflow-hidden mt-5">
         <div
@@ -123,7 +123,7 @@ export default function Statistics({ data }: StatisticsProps) {
       </div>
       <ul className="mt-5">
         {stats.map(({ label, homeStat, awayStat }, index) => (
-          <li key={index} className="flex justify-between items-center p-1">
+          <li key={index} className="flex justify-between items-center p-1 ">
             <div className="w-[10%] text-center ">{homeStat}</div>
             <span>{label}</span>
             <div className="w-[10%] text-center">{awayStat}</div>
