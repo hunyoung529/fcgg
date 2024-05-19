@@ -1,28 +1,17 @@
 "use client";
 import { useRouter } from "next/navigation";
+import { useRecoilValue } from "recoil";
+import { matchTypeState, userIdState } from "@/store/appState";
 import MatchDetail from "./MatchDetail";
-import { useState } from "react";
-import { TeamMatchInfo } from "@/utils/matchDetailsConvert";
 
-interface MatchListProps {
-  selectedMatchType: string;
-  userId: string;
-  matchDetails: TeamMatchInfo[];
-}
-
-export default function MatchList({
-  selectedMatchType,
-  userId,
-  matchDetails,
-}: MatchListProps) {
+export default function MatchList() {
   const router = useRouter();
-  const [visibleMatches, setVisibleMatches] = useState(5);
+  const selectedMatchType = useRecoilValue(matchTypeState);
+  const userId = useRecoilValue(userIdState);
 
-  const loadMoreMatches = () => {
-    setVisibleMatches((prevVisible) => prevVisible + 10);
+  const handleMatchTypeChange = (type: string) => {
+    router.push(`/${userId}/record?matchtype=${type}`);
   };
-
-  const currentMatches = matchDetails.slice(0, visibleMatches);
 
   return (
     <div className="mx-auto max-w-7xl">
@@ -32,7 +21,7 @@ export default function MatchList({
             ? "bg-green-500 text-white"
             : "bg-gray-200 text-gray-800"
         }`}
-        onClick={() => router.push(`/${userId}/record?matchtype=50`)}
+        onClick={() => handleMatchTypeChange("50")}
       >
         공식경기
       </button>
@@ -42,32 +31,11 @@ export default function MatchList({
             ? "bg-green-500 text-white"
             : "bg-gray-200 text-gray-800"
         }`}
-        onClick={() => router.push(`/${userId}/record?matchtype=52`)}
+        onClick={() => handleMatchTypeChange("52")}
       >
         감독모드
       </button>
-      {currentMatches.map((match, index) => (
-        <div key={index}>
-          <MatchDetail
-            matchData={{
-              homeTeam: match.homeTeam,
-              awayTeam: match.awayTeam,
-              matchId: match.matchId,
-              matchDate: match.matchDate,
-              matchType: match.matchType,
-              matchInfo: match.matchDetails,
-            }}
-          />
-        </div>
-      ))}
-      {visibleMatches < matchDetails.length && (
-        <button
-          onClick={loadMoreMatches}
-          className="load-more bg-[#34495e] w-full p-2 rounded"
-        >
-          더 보기
-        </button>
-      )}
+      <MatchDetail />
     </div>
   );
 }

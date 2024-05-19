@@ -1,29 +1,20 @@
-import { Match } from "@/utils/matchDetailsConvert";
+import { getMatchTeams } from "@/utils/matchHomeAway";
+import { Match } from "../utils/matchDetailsConvert";
 interface StatisticsProps {
   data: Match;
 }
 
-// function getTeamStatStyles(homeStat: number, awayStat: number) {
-//   const isHomeGreater = homeStat > awayStat;
-
-//   const homeStyle = {
-//     backgroundColor: isHomeGreater ? "#d3171e" : "transparent",
-//     borderRadius: isHomeGreater ? "10px" : "0",
-//     padding: isHomeGreater ? "5px" : "0",
-//   };
-
-//   const awayStyle = {
-//     backgroundColor: !isHomeGreater ? "#d3171e" : "transparent",
-//     borderRadius: !isHomeGreater ? "10px" : "0",
-//     padding: !isHomeGreater ? "5px" : "0",
-//   };
-
-//   return { homeStyle, awayStyle };
-// }
-
 export default function Statistics({ data }: StatisticsProps) {
-  const { homeTeam, awayTeam } = data;
+  const { homeTeam, awayTeam } = getMatchTeams(data);
+  const homePassSuccess = homeTeam.pass.passSuccess;
+  const homePassTry = homeTeam.pass.passTry;
+  const homePassPercentage =
+    homePassTry > 0 ? ((homePassSuccess / homePassTry) * 100).toFixed(1) : 0;
 
+  const awayPassSuccess = awayTeam.pass.passSuccess;
+  const awayPassTry = awayTeam.pass.passTry;
+  const awayPassPercentage =
+    awayPassTry > 0 ? ((awayPassSuccess / awayPassTry) * 100).toFixed(1) : 0;
   const stats = [
     {
       label: "전체슛",
@@ -37,14 +28,14 @@ export default function Statistics({ data }: StatisticsProps) {
     },
     {
       label: "정확한 패스",
-      homeStat: `${homeTeam.pass.passSuccess} (${(
-        (homeTeam.pass.passSuccess / homeTeam.pass.passTry) *
-        100
-      ).toFixed(1)}%)`,
-      awayStat: `${awayTeam.pass.passSuccess} (${(
-        (awayTeam.pass.passSuccess / awayTeam.pass.passTry) *
-        100
-      ).toFixed(1)}%)`,
+      homeStat:
+        homePassSuccess != null
+          ? `${homePassSuccess} (${homePassPercentage}%)`
+          : "몰수패",
+      awayStat:
+        awayPassSuccess != null
+          ? `${awayPassSuccess} (${awayPassPercentage}%)`
+          : "몰수패",
     },
     {
       label: "반칙",

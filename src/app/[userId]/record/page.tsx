@@ -1,93 +1,64 @@
-import divisionTypes from "../../data/divisionType.json";
-import MatchList from "./../../components/MatchList";
-import { matchDetailsConvert } from "../../utils/matchDetailsConvert";
+"use client";
+import { useEffect, useState } from "react";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import MatchList from "@/components/MatchList";
+import divisionTypes from "@/data/divisionType.json";
+import {
+  basicInfoState,
+  maxDivisionState,
+  matchIdsState,
+  matchDetailsState,
+  matchTypeState,
+  initialDataSelector,
+  userIdState,
+} from "@/store/appState";
+import { IMaxdivision } from "@/utils/matchDetailsConvert";
 
-const BASE_URL = `https://open.api.nexon.com/fconline/v1`;
-const Static_URL = "https://open.api.nexon.com/static/fconline";
-const API_KEY =
-  "live_4f57153bb99a388e2ea5b693777f054ee2ecec7dcc449c82b1c5347c89c84e86d6de6ab228a209130a4963ede623c0bc";
-
-async function getOuid(nickname: string) {
-  const response = await fetch(`${BASE_URL}/id?nickname=${nickname}`, {
-    headers: {
-      "x-nxopen-api-key": API_KEY,
-    },
-  });
-  const data = await response.json();
-  return data.ouid;
-}
-async function getMatchList(matchtype: string, ouid: string) {
-  const response = await fetch(
-    `${BASE_URL}/user/match?ouid=${ouid}&matchtype=${matchtype}&offset=0&limit=100`,
-    {
-      headers: {
-        "x-nxopen-api-key": API_KEY,
-      },
-    }
-  );
-  const data = await response.json();
-  return data;
-}
-async function getAllMatchDetails(matchIds: string[]) {
-  const promises = matchIds.map((matchId) => getMatchDetail(matchId));
-  const matchDetails = await Promise.all(promises);
-  return matchDetails;
-}
-
-async function getBasicInfo(ouid: string) {
-  const basicResponse = await fetch(`${BASE_URL}/user/basic?ouid=${ouid}`, {
-    headers: {
-      "x-nxopen-api-key": API_KEY,
-    },
-  });
-  const data = await basicResponse.json();
-
-  return data;
-}
-async function getMatchDetail(matchIds: string) {
-  const matchDetailResponse = await fetch(
-    `${BASE_URL}/match-detail?matchid=${matchIds}`,
-    {
-      headers: {
-        "x-nxopen-api-key": API_KEY,
-      },
-    }
-  );
-
-  const data = await matchDetailResponse.json();
-  return data;
-}
-
-async function getMaxDivision(ouid: string) {
-  const maxDivisionResponse = await fetch(
-    `${BASE_URL}/user/maxdivision?ouid=${ouid}`,
-    {
-      headers: {
-        "x-nxopen-api-key": API_KEY,
-      },
-    }
-  );
-  const data = await maxDivisionResponse.json();
-  return data;
-}
-
-interface IMaxdivision {
-  matchType: number;
-  division: number;
-  achievementDate: string;
-}
-export default async function RecordPage({
-  params: { userId },
-  searchParams: { matchtype },
-}: {
+interface RecordPageProps {
   params: { userId: string };
   searchParams: { matchtype: string };
-}) {
-  const ouid = await getOuid(userId);
-  const basicInfo = await getBasicInfo(ouid);
-  const maxDivision = await getMaxDivision(ouid);
-  const matchIds = await getMatchList(matchtype, ouid);
-  const matchDetails = await getAllMatchDetails(matchIds);
+}
+
+export default function RecordPage({
+  params: { userId },
+  searchParams: { matchtype },
+}: RecordPageProps) {
+  const setUserId = useSetRecoilState(userIdState);
+  const setMatchType = useSetRecoilState(matchTypeState);
+  const setBasicInfo = useSetRecoilState(basicInfoState);
+  const setMaxDivision = useSetRecoilState(maxDivisionState);
+  const setMatchIds = useSetRecoilState(matchIdsState);
+  const setMatchDetails = useSetRecoilState(matchDetailsState);
+  const [isLoading, setIsLoading] = useState(true);
+  const initialData = useRecoilValue(initialDataSelector);
+
+  useEffect(() => {
+    setUserId(userId);
+    setMatchType(matchtype);
+  }, [userId, matchtype]);
+
+  useEffect(() => {
+    if (initialData) {
+      setBasicInfo(initialData.basicInfo || {});
+      setMaxDivision(initialData.maxDivision || []);
+      setMatchIds(initialData.matchIds || []);
+      setMatchDetails(initialData.matchDetails || []);
+    }
+    setIsLoading(false);
+  }, [initialData]);
+  if (isLoading) {
+    return <h2 className="flex justify-center text-2xl mt-4">Loading...</h2>;
+  }
+
+  if (!initialData.ouid) {
+    return (
+      <h2 className="flex justify-center text-2xl mt-4">
+        유저 정보를 찾을 수 없습니다. 다시 검색해주세요
+      </h2>
+    );
+  }
+
+  const { basicInfo, maxDivision } = initialData;
 
   const findItem = maxDivision.find(
     (item: IMaxdivision) => item.matchType === parseInt(matchtype)
@@ -108,26 +79,11 @@ export default async function RecordPage({
         day: "numeric",
       }).format(date)
     : "날짜 정보 없음";
-  if (!ouid) return <h2>유저 정보를 찾을 수 없습니다. 다시 검색해주세요</h2>;
-  if (!findItem) return <h2>경기 정보를 찾을 수 없습니다.</h2>;
-  const transformedMatchDetails = matchDetails.map((match) => {
-    const homeTeam = matchDetailsConvert(match, 0);
-    const awayTeam = matchDetailsConvert(match, 1);
-
-    return {
-      matchId: match.matchId,
-      matchDate: match.matchDate,
-      matchType: match.matchType,
-      matchDetails: match.matchDetails,
-      homeTeam,
-      awayTeam,
-    };
-  });
 
   return (
     <>
       <section className="bg-[#34495e] rounded max-w-7xl flex items-center justify-between mx-auto p-2">
-        <div className=" w-30 ml-5">
+        <div className="w-30 ml-5">
           <h2 className="text-2xl mb-1">구단주명: {basicInfo.nickname}</h2>
           <p>레벨: {basicInfo.level}</p>
         </div>
@@ -138,14 +94,12 @@ export default async function RecordPage({
               달성일 - {isValidDate ? formattedDate : "날짜 정보 없음"}
             </p>
           </div>
-          <img src={divisionIcon} className="w-15 h-15 mx-5" />
+          {divisionIcon && (
+            <img src={divisionIcon} className="w-15 h-15 mx-5" />
+          )}
         </div>
       </section>
-      <MatchList
-        selectedMatchType={matchtype}
-        userId={userId}
-        matchDetails={transformedMatchDetails}
-      />
+      <MatchList />
     </>
   );
 }

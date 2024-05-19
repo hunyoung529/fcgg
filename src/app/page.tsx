@@ -1,6 +1,6 @@
 "use client";
-import { useRouter } from "next/navigation";
 
+import { useRouter } from "next/navigation";
 import { FormEvent } from "react";
 export default function Home() {
   const router = useRouter();
@@ -10,15 +10,13 @@ export default function Home() {
       "userId"
     ) as HTMLInputElement;
     const trimmedUserId = inputElement.value.trim();
+
     router.push(`/${trimmedUserId}/record?matchtype=50`);
   };
 
   return (
     <>
-      <div
-        className="bg-white rounded-lg shadow p-6 w-6/12 flex flex-col items-center justify-center mx-auto my-12"
-        style={{ minWidth: 640 }}
-      >
+      <div className="bg-white rounded-lg shadow p-6 w-6/12 flex flex-col items-center justify-center mx-auto my-12 min-w-[640px]">
         <form className="space-y-4 w-full" onSubmit={onSubmit}>
           <div className="flex items-center space-x-2">
             <input

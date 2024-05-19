@@ -18,6 +18,9 @@ export function getTimeDifference(dateString: string) {
 }
 export function formatDate(dateString: string) {
   const date = new Date(dateString);
+  if (isNaN(date.getTime())) {
+    return "Invalid date";
+  }
   return new Intl.DateTimeFormat("ko-KR", {
     year: "numeric",
     month: "long",

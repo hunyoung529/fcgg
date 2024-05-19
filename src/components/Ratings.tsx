@@ -1,57 +1,44 @@
-import React, { useEffect, useState } from "react";
-import { Match, Player } from "@/utils/matchDetailsConvert";
+import React, { useEffect } from "react";
+import {
+  Match,
+  Player,
+  PlayerMeta,
+  SeasonMeta,
+} from "@/utils/matchDetailsConvert";
+import { getPlayerMeta, getSeasonMeta } from "@/utils/api";
+import { useRecoilState } from "recoil";
+import {
+  homePlayersExtendedState,
+  awayPlayersExtendedState,
+} from "../store/appState";
+import { getMatchTeams } from "@/utils/matchHomeAway";
 
 interface RatingsProps {
   data: Match;
+  matchId: string;
 }
 
-interface PlayerMeta {
-  id: number;
-  name: string;
-}
+export default function Ratings({ data, matchId }: RatingsProps) {
+  const { homeTeam, awayTeam } = getMatchTeams(data);
 
-interface SeasonMeta {
-  seasonId: number;
-  className: string;
-  seasonImg: string;
-}
-
-const Static_URL = "https://open.api.nexon.com/static/fconline/meta";
-
-export default function Ratings({ data }: RatingsProps) {
-  // 홈팀과 어웨이팀 정보를 분리하여 저장합니다.
-  const [homePlayersExtended, setHomePlayersExtended] = useState<
-    Array<
-      Player & {
-        playerName?: string;
-        seasonImg?: string;
-        seasonClassName?: string;
-      }
-    >
-  >([]);
-
-  const [awayPlayersExtended, setAwayPlayersExtended] = useState<
-    Array<
-      Player & {
-        playerName?: string;
-        seasonImg?: string;
-        seasonClassName?: string;
-      }
-    >
-  >([]);
+  const [homePlayersExtended, setHomePlayersExtended] = useRecoilState(
+    homePlayersExtendedState(matchId)
+  );
+  const [awayPlayersExtended, setAwayPlayersExtended] = useRecoilState(
+    awayPlayersExtendedState(matchId)
+  );
 
   useEffect(() => {
     const fetchPlayerAndSeasonData = async () => {
       const [spidsResponse, seasonsResponse] = await Promise.all([
-        fetch(`${Static_URL}/spid.json`).then((res) => res.json()),
-        fetch(`${Static_URL}/seasonid.json`).then((res) => res.json()),
+        getPlayerMeta(),
+        getSeasonMeta(),
       ]);
 
       const seasons: SeasonMeta[] = seasonsResponse;
 
       const extendPlayerInfo = (players: Player[]) => {
         return players
-          .sort((a, b) => a.spPosition - b.spPosition)
           .map((player: Player) => {
             const playerMeta = spidsResponse.find(
               (meta: PlayerMeta) => meta.id === player.spId
@@ -66,15 +53,25 @@ export default function Ratings({ data }: RatingsProps) {
               seasonImg: seasonMeta ? seasonMeta.seasonImg : undefined,
               seasonClassName: seasonMeta ? seasonMeta.className : undefined,
             };
-          });
+          })
+          .sort((a, b) => a.spPosition - b.spPosition);
       };
 
-      setHomePlayersExtended(extendPlayerInfo(data.homeTeam.player));
-      setAwayPlayersExtended(extendPlayerInfo(data.awayTeam.player));
+      setHomePlayersExtended(extendPlayerInfo(homeTeam.player));
+      setAwayPlayersExtended(extendPlayerInfo(awayTeam.player));
     };
 
-    fetchPlayerAndSeasonData();
-  }, [data]);
+    if (homePlayersExtended.length === 0 && awayPlayersExtended.length === 0) {
+      fetchPlayerAndSeasonData();
+    }
+  }, [
+    homePlayersExtended,
+    awayPlayersExtended,
+    homeTeam.player,
+    awayTeam.player,
+    setHomePlayersExtended,
+    setAwayPlayersExtended,
+  ]);
 
   return (
     <div className="flex mx-auto justify-between my-5 items-center w-[70%] h-auto">
@@ -87,7 +84,7 @@ export default function Ratings({ data }: RatingsProps) {
               className=" mr-2 size-6"
             />
             <p className="text-left flex-grow-2">{player.playerName}</p>
-            <span className="text-center w-[8%]">{player.status.spRating}</span>
+            <span className="text-left w-[8%]">{player.status.spRating}</span>
           </li>
         ))}
       </ul>
@@ -100,7 +97,7 @@ export default function Ratings({ data }: RatingsProps) {
               className="mr-2 size-6"
             />
             <p className="text-left flex-grow-2">{player.playerName}</p>
-            <span className="text-center w-[8%]">{player.status.spRating}</span>
+            <span className="text-left w-[8%]">{player.status.spRating}</span>
           </li>
         ))}
       </ul>
