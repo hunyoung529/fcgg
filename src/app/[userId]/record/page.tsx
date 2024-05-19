@@ -29,8 +29,10 @@ export default function RecordPage({
   const setMaxDivision = useSetRecoilState(maxDivisionState);
   const setMatchIds = useSetRecoilState(matchIdsState);
   const setMatchDetails = useSetRecoilState(matchDetailsState);
-  const [isLoading, setIsLoading] = useState(true);
+
   const initialData = useRecoilValue(initialDataSelector);
+
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     setUserId(userId);
@@ -45,12 +47,13 @@ export default function RecordPage({
       setMatchDetails(initialData.matchDetails || []);
     }
     setIsLoading(false);
-  }, [initialData]);
+  }, [initialData, setBasicInfo, setMaxDivision, setMatchIds, setMatchDetails]);
+
   if (isLoading) {
     return <h2 className="flex justify-center text-2xl mt-4">Loading...</h2>;
   }
 
-  if (!initialData.ouid) {
+  if (!initialData || !initialData.ouid) {
     return (
       <h2 className="flex justify-center text-2xl mt-4">
         유저 정보를 찾을 수 없습니다. 다시 검색해주세요
@@ -61,7 +64,7 @@ export default function RecordPage({
   const { basicInfo, maxDivision } = initialData;
 
   const findItem = maxDivision.find(
-    (item: IMaxdivision) => item.matchType === parseInt(matchtype)
+    (item: IMaxdivision) => item.matchType === parseInt(matchtype, 10)
   );
 
   const divisionInfo = divisionTypes.find(
