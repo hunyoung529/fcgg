@@ -5,19 +5,20 @@ import Squad from "./Squad";
 import DetailedStatistics from "./DetailedStatistics";
 import Statistics from "./Statistics";
 import { getTimeDifference, formatDate } from "@/utils/timeDefference";
-import { useRecoilState, useRecoilValue } from "recoil";
-import { selectedTabState, matchDetailsState } from "@/store/appState";
+import { useRecoilValue } from "recoil";
+import { matchDetailsState } from "@/store/appState";
 import { Match } from "../utils/matchDetailsConvert";
 import { getMatchTeams } from "@/utils/matchHomeAway";
 
 export default function MatchDetail() {
   const matchDetails = useRecoilValue(matchDetailsState);
-  const [selectedTab, setSelectedTab] = useRecoilState(selectedTabState);
   const [visibleMatches, setVisibleMatches] = useState(5);
   const [activeMatches, setActiveMatches] = useState<Array<boolean>>([]);
+  const [selectedTabs, setSelectedTabs] = useState<Array<string>>([]);
 
   useEffect(() => {
     setActiveMatches(new Array(matchDetails.length).fill(false));
+    setSelectedTabs(new Array(matchDetails.length).fill("statistics"));
   }, [matchDetails]);
 
   const loadMoreMatches = () => {
@@ -30,7 +31,13 @@ export default function MatchDetail() {
     );
   };
 
-  const selectedContent = (matchData: Match, matchId: string) => {
+  const setSelectedTab = (index: number, tab: string) => {
+    setSelectedTabs((prevTabs) =>
+      prevTabs.map((selectedTab, i) => (i === index ? tab : selectedTab))
+    );
+  };
+
+  const selectedContent = (matchData: Match, matchId: string, selectedTab: string) => {
     switch (selectedTab) {
       case "statistics":
         return <Statistics data={matchData} />;
@@ -114,20 +121,20 @@ export default function MatchDetail() {
             {activeMatches[index] && (
               <div className="min-h-50v w-[80%] mx-auto">
                 <div className="flex justify-around w-[60%] mx-auto">
-                  <button onClick={() => setSelectedTab("statistics")}>
+                  <button onClick={() => setSelectedTab(index, "statistics")}>
                     주요통계
                   </button>
-                  <button onClick={() => setSelectedTab("detailedStatistics")}>
+                  <button onClick={() => setSelectedTab(index, "detailedStatistics")}>
                     세부통계
                   </button>
-                  <button onClick={() => setSelectedTab("ratings")}>
+                  <button onClick={() => setSelectedTab(index, "ratings")}>
                     평점
                   </button>
-                  {/* <button onClick={() => setSelectedTab("squad")}>
+                  {/* <button onClick={() => setSelectedTab(index, "squad")}>
                     스쿼드
                   </button> */}
                 </div>
-                {selectedContent(matchData, matchId)}
+                {selectedContent(matchData, matchId, selectedTabs[index])}
               </div>
             )}
           </div>
