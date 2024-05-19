@@ -4,7 +4,7 @@ FC온라인의 api를 이용해서 구단주들의 정보를 이용해서 경기
 
 ## Skills
 
-Nextjs,Tailwind
+Nextjs,Tailwind,recoil
 
 ## 개발 기간
 
@@ -16,9 +16,13 @@ Nextjs,Tailwind
 
 - Reactjs에서 Nextjs로 리뉴얼
 
-  2024.04.10
+2024.04.10
 
 - 세부통계 완료
+
+2024.05.19
+- 상태관리 recoil로 교체
+  
 
 ## TO BE UPDATED
 
