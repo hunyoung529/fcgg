@@ -26,7 +26,10 @@ body {
   color: white;
   background-color: black;
 }
-
+ul,
+li {
+  list-style: none;
+}
 @layer utilities {
   .text-balance {
     text-wrap: balance;

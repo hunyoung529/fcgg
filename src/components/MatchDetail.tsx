@@ -37,7 +37,11 @@ export default function MatchDetail() {
     );
   };
 
-  const selectedContent = (matchData: Match, matchId: string, selectedTab: string) => {
+  const selectedContent = (
+    matchData: Match,
+    matchId: string,
+    selectedTab: string
+  ) => {
     switch (selectedTab) {
       case "statistics":
         return <Statistics data={matchData} />;
@@ -124,7 +128,9 @@ export default function MatchDetail() {
                   <button onClick={() => setSelectedTab(index, "statistics")}>
                     주요통계
                   </button>
-                  <button onClick={() => setSelectedTab(index, "detailedStatistics")}>
+                  <button
+                    onClick={() => setSelectedTab(index, "detailedStatistics")}
+                  >
                     세부통계
                   </button>
                   <button onClick={() => setSelectedTab(index, "ratings")}>
