@@ -1,4 +1,4 @@
-import spPositionData from "@/data/sppositionData.json";
+import spPositionData from "@/data/spPositionData.json";
 
 interface Position {
   spposition: number;

@@ -1,7 +1,7 @@
 import { getMatchTeams } from "@/utils/matchHomeAway";
 import { Match } from "../utils/matchDetailsConvert";
 import React from "react";
-import { getPositionDescription } from "@/utils/positionMapping";
+// import { getPositionDescription } from "@/utils/positionMapping";
 interface SquadProps {
   data: Match;
 }
