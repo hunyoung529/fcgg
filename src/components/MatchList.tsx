@@ -14,7 +14,7 @@ export default function MatchList() {
   };
 
   return (
-    <div className="mx-auto max-w-7xl">
+    <div className="mx-auto max-w-7xl ">
       <button
         className={`m-2 p-2 rounded ${
           selectedMatchType === "50"
