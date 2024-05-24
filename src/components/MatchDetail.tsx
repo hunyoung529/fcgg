@@ -9,12 +9,14 @@ import { useRecoilValue } from "recoil";
 import { matchDetailsState } from "@/store/appState";
 import { Match } from "../utils/matchDetailsConvert";
 import { getMatchTeams } from "@/utils/matchHomeAway";
+import Image from "next/image";
 
 export default function MatchDetail() {
   const matchDetails = useRecoilValue(matchDetailsState);
   const [visibleMatches, setVisibleMatches] = useState(5);
   const [activeMatches, setActiveMatches] = useState<Array<boolean>>([]);
   const [selectedTabs, setSelectedTabs] = useState<Array<string>>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setActiveMatches(new Array(matchDetails.length).fill(false));
@@ -29,6 +31,10 @@ export default function MatchDetail() {
     setActiveMatches((prevActive) =>
       prevActive.map((isActive, i) => (i === index ? !isActive : isActive))
     );
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 500); // Simulate data loading delay
   };
 
   const setSelectedTab = (index: number, tab: string) => {
@@ -42,6 +48,9 @@ export default function MatchDetail() {
     matchId: string,
     selectedTab: string
   ) => {
+    if (loading) {
+      return <div>Loading...</div>;
+    }
     switch (selectedTab) {
       case "statistics":
         return <Statistics data={matchData} />;
@@ -49,8 +58,8 @@ export default function MatchDetail() {
         return <DetailedStatistics data={matchData} />;
       case "ratings":
         return <Ratings data={matchData} matchId={matchId} />;
-      // case "squad":
-      //   return <Squad data={matchData} />;
+      case "squad":
+        return <Squad data={matchData} matchId={matchId} />;
       default:
         return null;
     }
@@ -103,7 +112,13 @@ export default function MatchDetail() {
                 </span>
                 <div className="flex items-center justify-center gap-1 w-1/4 text-center">
                   <span>{homeTeam.nickname}</span>
-                  <img src={homeIcon} alt="HomeController" className="size-7" />
+                  <Image
+                    src={homeIcon}
+                    width={28}
+                    height={28}
+                    alt="HomeController"
+                    className="size-7"
+                  />
                 </div>
                 <div className="w-[10%] text-center">
                   <span>{homeTeam.shoot?.goalTotal ?? 0}</span>
@@ -112,7 +127,13 @@ export default function MatchDetail() {
                 </div>
                 <div className="flex items-center justify-center gap-1 w-1/4 text-center">
                   <span>{awayTeam.nickname}</span>
-                  <img src={awayIcon} alt="AwayController" className="size-7" />
+                  <Image
+                    src={awayIcon}
+                    width={28}
+                    height={28}
+                    alt="AwayController"
+                    className="size-7"
+                  />
                 </div>
                 <span className={`${awayBgColor} p-1 rounded`}>
                   {awayTeam.matchDetail?.matchResult}
@@ -136,9 +157,9 @@ export default function MatchDetail() {
                   <button onClick={() => setSelectedTab(index, "ratings")}>
                     평점
                   </button>
-                  {/* <button onClick={() => setSelectedTab(index, "squad")}>
+                  <button onClick={() => setSelectedTab(index, "squad")}>
                     스쿼드
-                  </button> */}
+                  </button>
                 </div>
                 {selectedContent(matchData, matchId, selectedTabs[index])}
               </div>

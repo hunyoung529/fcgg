@@ -13,6 +13,7 @@ import {
   userIdState,
 } from "@/store/appState";
 import { IMaxdivision } from "@/utils/matchDetailsConvert";
+import Image from "next/image";
 
 interface RecordPageProps {
   params: { userId: string };
@@ -37,7 +38,7 @@ export default function RecordPage({
   useEffect(() => {
     setUserId(userId);
     setMatchType(matchtype);
-  }, [userId, matchtype]);
+  }, [userId, matchtype, setUserId, setMatchType]);
 
   useEffect(() => {
     if (initialData) {
@@ -98,7 +99,13 @@ export default function RecordPage({
             </p>
           </div>
           {divisionIcon && (
-            <img src={divisionIcon} className="w-15 h-15 mx-5" />
+            <Image
+              src={divisionIcon}
+              alt={`${divisionName} 아이콘`}
+              width={80}
+              height={80}
+              className="w-15 h-15 mx-5 w-15"
+            />
           )}
         </div>
       </section>
