@@ -98,11 +98,25 @@ export default function Squad({ data, matchId }: SquadProps) {
   const homePlayersExtended = useRecoilValue(homePlayersExtendedState(matchId));
   const awayPlayersExtended = useRecoilValue(awayPlayersExtendedState(matchId));
 
+  const getDynamicSubCoordinates = (index: number, isHomeTeam: boolean) => {
+    const baseHomeAway = isHomeTeam ? "left" : "right";
+    return {
+      bottom: `${5 + index * 5}%`,
+      [baseHomeAway]: "0%",
+    };
+  };
+
   return (
     <section className="relative flex bg-[url('/bgField.png')] bg-cover bg-[center_right_-9px] w-full h-[600px] my-5">
       <ul className="relative w-1/2 h-full list-none p-0 m-0">
         {homePlayersExtended.map((player, index) => {
-          const { bottom, left } = homeTeamCoordinates[player.spPosition];
+          let coordinates;
+          if (player.spPosition === 28) {
+            coordinates = getDynamicSubCoordinates(index, true);
+          } else {
+            coordinates = homeTeamCoordinates[player.spPosition];
+          }
+          const { bottom, left } = coordinates;
           const playerImageUrl = `https://fco.dn.nexoncdn.co.kr/live/externalAssets/common/playersAction/p${player.spId}.png`;
           return (
             <li
@@ -126,7 +140,13 @@ export default function Squad({ data, matchId }: SquadProps) {
       </ul>
       <ul className="relative w-1/2 h-full list-none p-0 m-0">
         {awayPlayersExtended.map((player, index) => {
-          const { bottom, right } = awayTeamCoordinates[player.spPosition];
+          let coordinates;
+          if (player.spPosition === 28) {
+            coordinates = getDynamicSubCoordinates(index, false);
+          } else {
+            coordinates = awayTeamCoordinates[player.spPosition];
+          }
+          const { bottom, right } = coordinates;
           const playerImageUrl = `https://fco.dn.nexoncdn.co.kr/live/externalAssets/common/playersAction/p${player.spId}.png`;
 
           return (
