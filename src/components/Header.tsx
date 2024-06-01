@@ -7,7 +7,7 @@ export default function Header() {
         href="/"
         className="text-4xl text-[#0aff60] ml-5  font-logo font-bold "
       >
-        FCGG
+        ADARI
       </Link>
     </div>
   );
