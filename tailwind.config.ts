@@ -39,10 +39,10 @@ const config: Config = {
       flexGrow: {
         2: "2",
       },
-      backgroundImage: {
-        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
-        "gradient-conic":
-          "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
+      backgroundColor: {
+        lose: "#ef4444",
+        draw: "#454649",
+        win: "#3b82f6",
       },
     },
   },

@@ -1,0 +1,74 @@
+.squad-container {
+  display: flex;
+  position: relative;
+  width: 100%;
+  height: 600px;
+  margin: 20px 0;
+}
+
+.cell {
+  flex: 1 0 calc(100% / 14); /* 14 columns for pitch */
+  height: calc(100% / 7); /* 7 rows */
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.substitutes-left,
+.substitutes-right {
+  display: flex;
+  flex-direction: column;
+  width: calc(100% / 16); /* 1 column for substitutes */
+  height: 100%;
+  position: absolute;
+}
+
+.substitutes-left {
+  left: 0;
+}
+
+.substitutes-right {
+  right: 0;
+}
+
+.sub-cell {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.pitch {
+  display: flex;
+  flex-wrap: wrap;
+  width: calc((100% / 16) * 14); /* 중앙 14 columns */
+  height: 100%;
+  background-image: url("/bgPitch.svg");
+  background-size: cover;
+  background-position: center;
+  margin: 0 calc(100% / 16);
+}
+
+.player {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative; /* 상대 위치 설정 */
+}
+
+.player img {
+  background-color: salmon;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}
+
+.player p {
+  margin-top: 5px;
+  font-size: 12px;
+  color: white;
+}

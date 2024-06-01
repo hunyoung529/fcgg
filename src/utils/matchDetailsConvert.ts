@@ -57,6 +57,7 @@ export interface MatchInfo {
   };
   player: Player[];
 }
+
 export interface Status {
   shoot: number;
   effectiveShoot: number;
@@ -81,16 +82,21 @@ export interface Status {
   redCards: number;
   spRating: number;
 }
+
 export interface IMaxdivision {
   matchType: number;
   division: number;
   achievementDate: string;
 }
+
 export interface Player {
   spId: number;
   spPosition: number;
   spGrade: number;
   status: Status;
+  playerName?: string;
+  seasonImg?: string;
+  seasonClassName?: string;
 }
 
 export interface Match {
@@ -98,28 +104,29 @@ export interface Match {
   matchDate: string;
   matchType: string;
   matchInfo: MatchInfo[];
-  homeTeam: MatchInfo;
-  awayTeam: MatchInfo;
 }
+
 export interface TeamMatchInfo {
   matchId: string;
   matchDate: string;
   matchType: string;
-  matchDetails: MatchInfo[];
+  matchInfo: MatchInfo[];
   homeTeam: MatchInfo;
   awayTeam: MatchInfo;
 }
-export const matchDetailsConvert = (match: Match, index: number): MatchInfo => {
+
+export const matchDetailsConvert = (
+  match: Match,
+  index: number
+): MatchInfo | null => {
   if (
     !match.matchInfo ||
     !Array.isArray(match.matchInfo) ||
     index >= match.matchInfo.length ||
     index < 0
   ) {
-    console.error("Invalid index or matchInfo data");
-    throw new Error(
-      "Invalid index or matchInfo data; please check the input data."
-    );
+    console.error("Invalid index or matchInfo data", { match, index });
+    return null;
   }
   const { nickname, matchDetail, shoot, pass, defence, player } =
     match.matchInfo[index];
@@ -132,6 +139,7 @@ export const matchDetailsConvert = (match: Match, index: number): MatchInfo => {
     defence,
   };
 };
+
 export interface PlayerMeta {
   id: number;
   name: string;

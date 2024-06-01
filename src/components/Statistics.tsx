@@ -1,11 +1,16 @@
-import { getMatchTeams } from "@/utils/matchHomeAway";
-import { Match } from "../utils/matchDetailsConvert";
+import { TeamMatchInfo } from "../utils/matchDetailsConvert";
+
 interface StatisticsProps {
-  data: Match;
+  data: TeamMatchInfo;
 }
 
 export default function Statistics({ data }: StatisticsProps) {
-  const { homeTeam, awayTeam } = getMatchTeams(data);
+  const { homeTeam, awayTeam } = data;
+
+  if (!homeTeam || !awayTeam) {
+    return <div>유효하지 않은 매치 데이터입니다.</div>;
+  }
+
   const homePassSuccess = homeTeam.pass.passSuccess;
   const homePassTry = homeTeam.pass.passTry;
   const homePassPercentage =
@@ -15,6 +20,7 @@ export default function Statistics({ data }: StatisticsProps) {
   const awayPassTry = awayTeam.pass.passTry;
   const awayPassPercentage =
     awayPassTry > 0 ? ((awayPassSuccess / awayPassTry) * 100).toFixed(1) : 0;
+
   const stats = [
     {
       label: "전체슛",

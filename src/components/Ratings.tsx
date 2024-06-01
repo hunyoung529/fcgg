@@ -1,32 +1,22 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
-  Match,
   Player,
   PlayerMeta,
   SeasonMeta,
+  TeamMatchInfo,
 } from "@/utils/matchDetailsConvert";
 import { getPlayerMeta, getSeasonMeta } from "@/utils/api";
-import { useRecoilState } from "recoil";
-import {
-  homePlayersExtendedState,
-  awayPlayersExtendedState,
-} from "../store/appState";
-import { getMatchTeams } from "@/utils/matchHomeAway";
+import Image from "next/image";
 
 interface RatingsProps {
-  data: Match;
-  matchId: string;
+  data: TeamMatchInfo;
 }
 
-export default function Ratings({ data, matchId }: RatingsProps) {
-  const { homeTeam, awayTeam } = getMatchTeams(data);
+export default function Ratings({ data }: RatingsProps) {
+  const { homeTeam, awayTeam } = data;
 
-  const [homePlayersExtended, setHomePlayersExtended] = useRecoilState(
-    homePlayersExtendedState(matchId)
-  );
-  const [awayPlayersExtended, setAwayPlayersExtended] = useRecoilState(
-    awayPlayersExtendedState(matchId)
-  );
+  const [homePlayersExtended, setHomePlayersExtended] = useState<Player[]>([]);
+  const [awayPlayersExtended, setAwayPlayersExtended] = useState<Player[]>([]);
 
   useEffect(() => {
     const fetchPlayerAndSeasonData = async () => {
@@ -37,7 +27,7 @@ export default function Ratings({ data, matchId }: RatingsProps) {
 
       const seasons: SeasonMeta[] = seasonsResponse;
 
-      const extendPlayerInfo = (players: Player[]) => {
+      const extendPlayerInfo = (players: Player[]): Player[] => {
         return players
           .map((player: Player) => {
             const playerMeta = spidsResponse.find(
@@ -61,28 +51,23 @@ export default function Ratings({ data, matchId }: RatingsProps) {
       setAwayPlayersExtended(extendPlayerInfo(awayTeam.player));
     };
 
-    if (homePlayersExtended.length === 0 && awayPlayersExtended.length === 0) {
-      fetchPlayerAndSeasonData();
-    }
-  }, [
-    homePlayersExtended,
-    awayPlayersExtended,
-    homeTeam.player,
-    awayTeam.player,
-    setHomePlayersExtended,
-    setAwayPlayersExtended,
-  ]);
+    fetchPlayerAndSeasonData();
+  }, [homeTeam.player, awayTeam.player]);
 
   return (
     <div className="flex mx-auto justify-between my-5 items-center w-[70%] h-auto">
       <ul className="w-[40%]">
         {homePlayersExtended.map((player, index) => (
           <li key={index} className="flex mb-1 items-center justify-between">
-            <img
-              src={player.seasonImg}
-              alt={player.seasonClassName}
-              className=" mr-2 size-6"
-            />
+            {player.seasonImg && (
+              <Image
+                src={player.seasonImg}
+                alt={player.seasonClassName ?? "Season Image"}
+                className="mr-2 size-6"
+                width={24}
+                height={24}
+              />
+            )}
             <p className="text-left flex-grow-2">{player.playerName}</p>
             <span className="text-left w-[8%]">{player.status.spRating}</span>
           </li>
@@ -91,11 +76,15 @@ export default function Ratings({ data, matchId }: RatingsProps) {
       <ul className="w-[40%]">
         {awayPlayersExtended.map((player, index) => (
           <li key={index} className="flex mb-1 items-center justify-between">
-            <img
-              src={player.seasonImg}
-              alt={player.seasonClassName}
-              className="mr-2 size-6"
-            />
+            {player.seasonImg && (
+              <Image
+                src={player.seasonImg}
+                alt={player.seasonClassName ?? "Season Image"}
+                className="mr-2 size-6"
+                width={24}
+                height={24}
+              />
+            )}
             <p className="text-left flex-grow-2">{player.playerName}</p>
             <span className="text-left w-[8%]">{player.status.spRating}</span>
           </li>

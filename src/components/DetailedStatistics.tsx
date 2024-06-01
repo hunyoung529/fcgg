@@ -1,19 +1,18 @@
 "use client";
 import { useState } from "react";
-import { Match } from "../utils/matchDetailsConvert";
+import { TeamMatchInfo } from "../utils/matchDetailsConvert";
 import {
   OtherStatistics,
   PassStatistics,
   ShootStatistics,
 } from "./DetailStats";
-import { getMatchTeams } from "@/utils/matchHomeAway";
 
 interface DetailStatisticsProps {
-  data: Match;
+  data: TeamMatchInfo;
 }
 export default function DetailedStatistics({ data }: DetailStatisticsProps) {
   const [selectedTab, setSelectedTab] = useState("shoot");
-  const { homeTeam, awayTeam } = getMatchTeams(data);
+  const { homeTeam, awayTeam } = data;
   const selectedStatistics = () => {
     switch (selectedTab) {
       case "shoot":

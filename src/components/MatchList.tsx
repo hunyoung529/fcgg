@@ -1,27 +1,39 @@
 "use client";
+
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useRecoilValue } from "recoil";
-import { matchTypeState, userIdState } from "@/store/appState";
 import MatchDetail from "./MatchDetail";
+import { TeamMatchInfo } from "@/utils/matchDetailsConvert";
 
-export default function MatchList() {
+interface MatchListProps {
+  selectedMatchType: string;
+  userId: string;
+  matchDetails: TeamMatchInfo[];
+}
+
+export default function MatchList({
+  selectedMatchType,
+  userId,
+  matchDetails,
+}: MatchListProps) {
   const router = useRouter();
-  const selectedMatchType = useRecoilValue(matchTypeState);
-  const userId = useRecoilValue(userIdState);
+  const [visibleMatches, setVisibleMatches] = useState(5);
 
-  const handleMatchTypeChange = (type: string) => {
-    router.push(`/${userId}/record?matchtype=${type}`);
+  const loadMoreMatches = () => {
+    setVisibleMatches((prevVisible) => prevVisible + 10);
   };
 
+  const currentMatches = matchDetails.slice(0, visibleMatches);
+
   return (
-    <div className="mx-auto max-w-7xl ">
+    <div className="mx-auto max-w-7xl">
       <button
         className={`m-2 p-2 rounded ${
           selectedMatchType === "50"
             ? "bg-green-500 text-white"
             : "bg-gray-200 text-gray-800"
         }`}
-        onClick={() => handleMatchTypeChange("50")}
+        onClick={() => router.push(`/${userId}/record?matchtype=50`)}
       >
         공식경기
       </button>
@@ -31,11 +43,21 @@ export default function MatchList() {
             ? "bg-green-500 text-white"
             : "bg-gray-200 text-gray-800"
         }`}
-        onClick={() => handleMatchTypeChange("52")}
+        onClick={() => router.push(`/${userId}/record?matchtype=52`)}
       >
         감독모드
       </button>
-      <MatchDetail />
+      {currentMatches.map((match, index) => (
+        <MatchDetail key={index} matchData={match} />
+      ))}
+      {visibleMatches < matchDetails.length && (
+        <button
+          onClick={loadMoreMatches}
+          className="load-more bg-[#34495e] w-full p-2 rounded"
+        >
+          더 보기
+        </button>
+      )}
     </div>
   );
 }

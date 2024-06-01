@@ -1,72 +1,54 @@
-"use client";
-import { useEffect, useState } from "react";
-import { useRecoilValue, useSetRecoilState } from "recoil";
-import MatchList from "@/components/MatchList";
+import {
+  getOuid,
+  getBasicInfo,
+  getMaxDivision,
+  getMatchList,
+  getAllMatchDetails,
+} from "@/utils/api";
 import divisionTypes from "@/data/divisionType.json";
 import {
-  basicInfoState,
-  maxDivisionState,
-  matchIdsState,
-  matchDetailsState,
-  matchTypeState,
-  initialDataSelector,
-  userIdState,
-} from "@/store/appState";
-import { IMaxdivision } from "@/utils/matchDetailsConvert";
-import Image from "next/image";
+  matchDetailsConvert,
+  TeamMatchInfo,
+} from "@/utils/matchDetailsConvert";
+import MatchList from "@/components/MatchList";
+
+interface IMaxdivision {
+  matchType: number;
+  division: number;
+  achievementDate: string;
+}
 
 interface RecordPageProps {
   params: { userId: string };
   searchParams: { matchtype: string };
 }
 
-export default function RecordPage({
+export default async function RecordPage({
   params: { userId },
   searchParams: { matchtype },
 }: RecordPageProps) {
-  const setUserId = useSetRecoilState(userIdState);
-  const setMatchType = useSetRecoilState(matchTypeState);
-  const setBasicInfo = useSetRecoilState(basicInfoState);
-  const setMaxDivision = useSetRecoilState(maxDivisionState);
-  const setMatchIds = useSetRecoilState(matchIdsState);
-  const setMatchDetails = useSetRecoilState(matchDetailsState);
+  const ouid = await getOuid(userId);
+  if (!ouid) return <h2>유저 정보를 찾을 수 없습니다. 다시 검색해주세요</h2>;
 
-  const initialData = useRecoilValue(initialDataSelector);
+  const basicInfo = await getBasicInfo(ouid);
+  const maxDivision = await getMaxDivision(ouid);
+  const matchIds = await getMatchList(matchtype, ouid);
 
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    setUserId(userId);
-    setMatchType(matchtype);
-  }, [userId, matchtype, setUserId, setMatchType]);
-
-  useEffect(() => {
-    if (initialData) {
-      setBasicInfo(initialData.basicInfo || {});
-      setMaxDivision(initialData.maxDivision || []);
-      setMatchIds(initialData.matchIds || []);
-      setMatchDetails(initialData.matchDetails || []);
-    }
-    setIsLoading(false);
-  }, [initialData, setBasicInfo, setMaxDivision, setMatchIds, setMatchDetails]);
-
-  if (isLoading) {
-    return <h2 className="flex justify-center text-2xl mt-4">Loading...</h2>;
+  if (!Array.isArray(matchIds)) {
+    return <h2>경기 정보를 찾을 수 없습니다.</h2>;
   }
 
-  if (!initialData || !initialData.ouid) {
-    return (
-      <h2 className="flex justify-center text-2xl mt-4">
-        유저 정보를 찾을 수 없습니다. 다시 검색해주세요
-      </h2>
-    );
-  }
+  const matchDetails = await getAllMatchDetails(matchIds);
 
-  const { basicInfo, maxDivision } = initialData;
+  if (!Array.isArray(maxDivision)) {
+    return <h2>경기 정보를 찾을 수 없습니다.</h2>;
+  }
 
   const findItem = maxDivision.find(
-    (item: IMaxdivision) => item.matchType === parseInt(matchtype, 10)
+    (item: IMaxdivision) => item.matchType === parseInt(matchtype)
   );
+
+  if (!findItem) return <h2>경기 정보를 찾을 수 없습니다.</h2>;
 
   const divisionInfo = divisionTypes.find(
     (dt) => dt.divisionId === findItem?.division
@@ -84,6 +66,29 @@ export default function RecordPage({
       }).format(date)
     : "날짜 정보 없음";
 
+  const transformedMatchDetails: TeamMatchInfo[] = matchDetails.reduce(
+    (acc, match) => {
+      const homeTeam = matchDetailsConvert(match, 0);
+      const awayTeam = matchDetailsConvert(match, 1);
+
+      if (homeTeam && awayTeam) {
+        acc.push({
+          matchId: match.matchId,
+          matchDate: match.matchDate,
+          matchType: match.matchType,
+          matchInfo: match.matchInfo,
+          homeTeam,
+          awayTeam,
+        });
+      } else {
+        console.error("Failed to convert match data:", match);
+      }
+
+      return acc;
+    },
+    [] as TeamMatchInfo[]
+  );
+
   return (
     <>
       <section className="bg-[#34495e] rounded max-w-7xl flex items-center justify-between mx-auto p-2">
@@ -98,18 +103,14 @@ export default function RecordPage({
               달성일 - {isValidDate ? formattedDate : "날짜 정보 없음"}
             </p>
           </div>
-          {divisionIcon && (
-            <Image
-              src={divisionIcon}
-              alt={`${divisionName} 아이콘`}
-              width={80}
-              height={80}
-              className="w-15 h-15 mx-5 w-15"
-            />
-          )}
+          <img src={divisionIcon} className="w-15 h-15 mx-5" />
         </div>
       </section>
-      <MatchList />
+      <MatchList
+        selectedMatchType={matchtype}
+        userId={userId}
+        matchDetails={transformedMatchDetails}
+      />
     </>
   );
 }
