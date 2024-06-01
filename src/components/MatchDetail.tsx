@@ -57,14 +57,14 @@ export default function MatchDetail({ matchData }: MatchDetailProps) {
   return (
     <>
       <div className="rounded-md bg-[#66788a] my-2 text-white py-1 px-10 min-h-10v flex items-center justify-between w-full">
-        <p className="" title={detailedDate}>
+        <p className="w-[15%]" title={detailedDate}>
           {relativeTime}
         </p>
-        <div className="flex justify-between w-4/6 items-center">
+        <div className="flex justify-between w-[70%] items-center">
           <span className={`${homeBgColor} p-1 rounded`}>
             {homeTeam.matchDetail.matchResult}
           </span>
-          <div className="flex items-center justify-center gap-1 w-[30%] text-center">
+          <div className="flex items-center justify-center gap-1 w-1/4 text-center">
             <span>{homeTeam.nickname}</span>
             <Image src={homeIcon} alt="HomeController" width={28} height={28} />
           </div>
@@ -73,7 +73,7 @@ export default function MatchDetail({ matchData }: MatchDetailProps) {
             <span className="mx-1 rounded">:</span>
             <span>{awayTeam.shoot.goalTotal}</span>
           </div>
-          <div className="flex items-center justify-center gap-1 w-[30%] text-center">
+          <div className="flex items-center justify-center gap-1 w-1/4 text-center">
             <span>{awayTeam.nickname}</span>
             <Image src={awayIcon} alt="HomeController" width={28} height={28} />
           </div>
@@ -81,8 +81,8 @@ export default function MatchDetail({ matchData }: MatchDetailProps) {
             {awayTeam.matchDetail.matchResult}
           </span>
         </div>
-        <div className="">
-          <button className="" onClick={toggleActive}>
+        <div className="w-[15%] ml-auto text-right">
+          <button onClick={toggleActive}>
             더보기
           </button>
         </div>
