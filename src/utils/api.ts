@@ -8,6 +8,7 @@ export async function getOuid(nickname: string) {
     headers: {
       "x-nxopen-api-key": API_KEY,
     },
+    next: { revalidate: 300 },
   });
   const data = await response.json();
   return data.ouid;
