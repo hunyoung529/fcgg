@@ -8,7 +8,7 @@ export async function getOuid(nickname: string) {
     headers: {
       "x-nxopen-api-key": API_KEY,
     },
-    next: { revalidate: 3600 },
+    cache: "no-store",
   });
   const data = await response.json();
   return data.ouid;
@@ -25,7 +25,6 @@ export const getMatchList = async (matchType: string, ouid: string) => {
       headers: {
         "x-nxopen-api-key": API_KEY,
       },
-      next: { revalidate: 3600 },
     }
   );
 
@@ -54,7 +53,6 @@ export async function getBasicInfo(ouid: string) {
     headers: {
       "x-nxopen-api-key": API_KEY,
     },
-    next: { revalidate: 3600 },
   });
   const data = await response.json();
   return data;
@@ -65,7 +63,6 @@ export async function getMatchDetail(matchId: string) {
     headers: {
       "x-nxopen-api-key": API_KEY,
     },
-    next: { revalidate: 3600 },
   });
   const data = await response.json();
   return data;
@@ -76,7 +73,6 @@ export async function getMaxDivision(ouid: string) {
     headers: {
       "x-nxopen-api-key": API_KEY,
     },
-    next: { revalidate: 3600 },
   });
   const data = await response.json();
   return data;
