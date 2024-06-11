@@ -82,9 +82,7 @@ export default function MatchDetail({ matchData }: MatchDetailProps) {
           </span>
         </div>
         <div className="w-[15%] ml-auto text-right">
-          <button onClick={toggleActive}>
-            더보기
-          </button>
+          <button onClick={toggleActive}>더보기</button>
         </div>
       </div>
       {isActive && (
