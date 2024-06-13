@@ -7,13 +7,13 @@ export default function Header() {
   const router = useRouter();
   const pathname = usePathname();
   const isMainPage = pathname === "/";
+
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const inputElement = event.currentTarget.elements.namedItem(
       "userId"
     ) as HTMLInputElement;
     const trimmedUserId = inputElement.value.trim();
-
     router.push(`/${trimmedUserId}/record?matchtype=50`);
   };
 

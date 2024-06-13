@@ -1,15 +1,16 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import Header from "@/components/Header";
 import "./globals.css";
-
-const inter = Inter({ subsets: ["latin"] });
+import { GoogleTagManager } from "@next/third-parties/google";
 
 export const metadata: Metadata = {
   title: "FC온라인 전적 검색은 ADARI.KR ",
   description: "FC온라인 전적&통계 검색 사이트",
   icons: {
     icon: "/favicon.ico",
+  },
+  verification: {
+    google: "YUSMRC-SUV_pdgRNMWSpjYUCfeHNgVMWNuwS64AHink",
   },
 };
 
@@ -20,10 +21,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body>
         <Header />
         {children}
       </body>
+      <GoogleTagManager
+        gtmId="
+GTM-PW8R82L3"
+      />
     </html>
   );
 }
