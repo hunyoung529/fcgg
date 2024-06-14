@@ -30,7 +30,9 @@ const renderPlayer = (
   team: "home" | "away",
   highestRating: number
 ) => {
-  const playerImageUrl = `https://fco.dn.nexoncdn.co.kr/live/externalAssets/common/playersAction/p${player.spId}.png`;
+  const pId = player.spId.toString().slice(3);
+  const trimmedPId = Number(pId);
+  const playerImageUrl = `https://fco.dn.nexoncdn.co.kr/live/externalAssets/common/players/p${trimmedPId}.png`;
 
   // 조건에 따른 클래스 추가
   const ratingClass =
