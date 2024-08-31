@@ -70,7 +70,6 @@ export default async function RecordPage({
     (acc, match) => {
       const homeTeam = matchDetailsConvert(match, 0);
       const awayTeam = matchDetailsConvert(match, 1);
-
       if (homeTeam && awayTeam) {
         acc.push({
           matchId: match.matchId,
@@ -88,6 +87,7 @@ export default async function RecordPage({
     },
     [] as TeamMatchInfo[]
   );
+  console.log(transformedMatchDetails, "디테일");
 
   return (
     <>

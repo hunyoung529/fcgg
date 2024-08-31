@@ -9,8 +9,6 @@ const useMatchData = (matchData: TeamMatchInfo) => {
   const [isActive, setIsActive] = useState(false);
   const [selectedTab, setSelectedTab] = useState("statistics");
 
-
-
   const toggleActive = () => {
     setIsActive(!isActive);
   };

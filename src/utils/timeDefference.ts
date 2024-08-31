@@ -1,7 +1,11 @@
 export function getTimeDifference(dateString: string) {
   const now = new Date();
   const past = new Date(dateString);
-  const differenceInSeconds = Math.floor((+now - +past) / 1000);
+
+  // UTC 시간을 KST로 변환
+  const kstPast = new Date(past.getTime() + 9 * 60 * 60 * 1000);
+
+  const differenceInSeconds = Math.floor((+now - +kstPast) / 1000);
   const differenceInMinutes = Math.floor(differenceInSeconds / 60);
   const differenceInHours = Math.floor(differenceInMinutes / 60);
   const differenceInDays = Math.floor(differenceInHours / 24);
@@ -18,7 +22,9 @@ export function getTimeDifference(dateString: string) {
 }
 export function formatDate(dateString: string) {
   const date = new Date(dateString);
-  if (isNaN(date.getTime())) {
+  const kstDate = new Date(date.getTime() + 9 * 60 * 60 * 1000);
+
+  if (isNaN(kstDate.getTime())) {
     return "Invalid date";
   }
   return new Intl.DateTimeFormat("ko-KR", {
@@ -29,5 +35,5 @@ export function formatDate(dateString: string) {
     hour: "numeric",
     minute: "numeric",
     hour12: true,
-  }).format(date);
+  }).format(kstDate);
 }
