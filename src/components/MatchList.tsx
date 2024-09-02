@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import MatchDetail from "./MatchDetail";
 import { TeamMatchInfo } from "@/utils/matchDetailsConvert";
+import { useRecoilState } from "recoil";
+import { matchDetailsState } from "@/store/matchDetailsState";
 
 interface MatchListProps {
   selectedMatchType: string;
@@ -18,14 +20,19 @@ export default function MatchList({
 }: MatchListProps) {
   const router = useRouter();
   const [visibleMatches, setVisibleMatches] = useState(5);
-
+  const [stateMatchDetails, setStateMatchDetails] =
+    useRecoilState(matchDetailsState);
   const loadMoreMatches = () => {
     setVisibleMatches((prevVisible) => prevVisible + 10);
   };
 
-  const currentMatches = matchDetails.slice(0, visibleMatches);
-  console.log(currentMatches);
+  useEffect(() => {
+    // Recoil 상태 초기화
+    setStateMatchDetails(matchDetails);
+  }, [matchDetails, setStateMatchDetails]);
 
+  const currentMatches = stateMatchDetails.slice(0, visibleMatches);
+  console.log(stateMatchDetails, "리코일로 부름");
   return (
     <div className="mx-auto max-w-7xl">
       <button

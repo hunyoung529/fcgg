@@ -3,6 +3,7 @@ import Header from "@/components/Header";
 import "./globals.css";
 import { GoogleTagManager } from "@next/third-parties/google";
 import { Providers } from "./providers";
+import RecoilContextProvider from "@/lib/recoilContextProvider";
 
 export const metadata: Metadata = {
   title: "FC온라인 전적 검색은 ADARI.KR ",
@@ -24,7 +25,9 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <Header />
-        <Providers>{children}</Providers>
+        <RecoilContextProvider>
+          <Providers>{children}</Providers>
+        </RecoilContextProvider>
       </body>
       <GoogleTagManager
         gtmId="
