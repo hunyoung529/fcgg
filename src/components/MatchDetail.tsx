@@ -86,7 +86,7 @@ export default function MatchDetail({ matchData }: MatchDetailProps) {
         </div>
       </div>
       {isActive && (
-        <div className="min-h-50v w-full mx-auto text-white">
+        <div className="min-h-50v w-full mx-auto text-whiteb bg-black">
           <div className="flex justify-between w-[60%] mx-auto">
             <button onClick={() => setSelectedTab("statistics")}>
               주요통계

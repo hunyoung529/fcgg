@@ -49,7 +49,11 @@ const renderPlayer = (
   const isHighestRating = player.spRating === highestRating;
 
   return (
-    <div key={index} className="player">
+    <button
+      key={index}
+      className="player"
+      onClick={() => console.log(player.playerName)}
+    >
       <figure>
         <img
           src={playerImageUrl}
@@ -69,7 +73,7 @@ const renderPlayer = (
       </figure>
 
       <p>{shortenName(player.playerName)}</p>
-    </div>
+    </button>
   );
 };
 

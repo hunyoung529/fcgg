@@ -87,7 +87,6 @@ export default async function RecordPage({
     },
     [] as TeamMatchInfo[]
   );
-  console.log(transformedMatchDetails, "디테일");
 
   return (
     <>

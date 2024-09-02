@@ -25,6 +25,7 @@
 body {
   color: white;
   background-color: black;
+  min-height: 100vh;
 }
 ul,
 li {

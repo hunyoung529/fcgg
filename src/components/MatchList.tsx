@@ -24,6 +24,7 @@ export default function MatchList({
   };
 
   const currentMatches = matchDetails.slice(0, visibleMatches);
+  console.log(currentMatches);
 
   return (
     <div className="mx-auto max-w-7xl">
