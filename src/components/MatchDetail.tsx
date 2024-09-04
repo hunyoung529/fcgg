@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import useMatchData from "@/hooks/useMatchData";
 import Ratings from "./Ratings";
 import Squad from "./Squad";
@@ -6,19 +6,27 @@ import DetailedStatistics from "./DetailedStatistics";
 import Statistics from "./Statistics";
 import { TeamMatchInfo } from "@/utils/matchDetailsConvert";
 import Image from "next/image";
+import { useRecoilState } from "recoil";
+import { selectedMatchState } from "@/store/matchDetailsState";
 
 interface MatchDetailProps {
   matchData: TeamMatchInfo;
 }
 
 export default function MatchDetail({ matchData }: MatchDetailProps) {
+  const [selectedMatch, setSelectedMatch] = useRecoilState(selectedMatchState);
+  const [isActive, setIsActive] = useState(false);
+
+  // 매치 활성화/비활성화와 선택된 매치 설정
+  const toggleActive = () => {
+    setIsActive(!isActive); // isActive 상태를 반대로 변경
+    setSelectedMatch(selectedMatch === matchData ? null : matchData); // 선택된 매치 설정
+  };
   const {
     homeTeam,
     awayTeam,
     relativeTime,
     detailedDate,
-    isActive,
-    toggleActive,
     selectedTab,
     setSelectedTab,
     homeIcon,
@@ -28,13 +36,13 @@ export default function MatchDetail({ matchData }: MatchDetailProps) {
   const selectedContent = () => {
     switch (selectedTab) {
       case "statistics":
-        return <Statistics data={matchData} />;
-      case "detailedStatistics":
-        return <DetailedStatistics data={matchData} />;
-      case "ratings":
-        return <Ratings data={matchData} />;
-      case "squad":
-        return <Squad data={matchData} />;
+        return <Statistics />;
+      // case "detailedStatistics":
+      //   return <DetailedStatistics  />;
+      // case "ratings":
+      //   return <Ratings />;
+      // case "squad":
+      //   return <Squad  />;
       default:
         return null;
     }

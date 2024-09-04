@@ -1,10 +1,15 @@
-import { TeamMatchInfo } from "../utils/matchDetailsConvert";
+import { useRecoilValue } from "recoil";
+import { selectedMatchState } from "@/store/matchDetailsState"; // Recoil 상태 임포트
 
-interface StatisticsProps {
-  data: TeamMatchInfo;
-}
+export default function Statistics() {
+  // Recoil에서 선택된 매치 데이터 가져오기
+  const data = useRecoilValue(selectedMatchState);
 
-export default function Statistics({ data }: StatisticsProps) {
+  // 선택된 매치가 없을 경우 처리
+  if (!data) {
+    return <div>선택된 매치가 없습니다.</div>;
+  }
+
   const { homeTeam, awayTeam } = data;
 
   if (!homeTeam || !awayTeam) {
