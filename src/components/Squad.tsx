@@ -9,9 +9,9 @@ import { getPlayerMeta, getSeasonMeta } from "@/utils/api";
 import playerCoordinates from "@/utils/squadPosition";
 import "../styles/squad.css";
 
-interface SquadProps {
-  data: TeamMatchInfo;
-}
+import { useRecoilValue } from "recoil";
+import { matchDataState } from "@/store/matchDetailsState";
+import PlayerDetailModal from "./PlayerDetailModal"; // PlayerDetailModal 컴포넌트 불러오기
 
 const shortenName = (name?: string) => {
   if (!name) return "Unknown";
@@ -19,72 +19,20 @@ const shortenName = (name?: string) => {
   return parts.length > 1 ? parts[parts.length - 1] : name;
 };
 
-const renderPlayer = (
-  player: {
-    spId: number;
-    spPosition: number;
-    playerName?: string;
-    spRating?: number;
-  },
-  index: number,
-  team: "home" | "away",
-  highestRating: number
-) => {
-  const pId = player.spId.toString().slice(3);
-  const trimmedPId = Number(pId);
-  const playerImageUrl = `https://fco.dn.nexoncdn.co.kr/live/externalAssets/common/players/p${trimmedPId}.png`;
-
-  // 조건에 따른 클래스 추가
-  const ratingClass =
-    player.spRating === 0
-      ? "rating-black"
-      : player.spRating && player.spRating < 5
-      ? "rating-red"
-      : player.spRating && player.spRating < 7
-      ? "rating-orange"
-      : player.spRating && player.spRating >= 7
-      ? "rating-green"
-      : "";
-
-  const isHighestRating = player.spRating === highestRating;
-
-  return (
-    <button
-      key={index}
-      className="player"
-      onClick={() => console.log(player.playerName)}
-    >
-      <figure>
-        <img
-          src={playerImageUrl}
-          alt={`Player ${player.spId}`}
-          onError={(event) => {
-            const target = event.target as HTMLImageElement;
-            target.src = "/default_silhouette_player.png";
-          }}
-        />
-        <span
-          className={`playerRating ${ratingClass} ${
-            isHighestRating ? "rating-blue" : ""
-          }`}
-        >
-          {player.spRating}
-        </span>
-      </figure>
-
-      <p>{shortenName(player.playerName)}</p>
-    </button>
-  );
-};
-
-export default function Squad({ data }: SquadProps) {
-  const { homeTeam, awayTeam } = data;
-
+const Squad = ({ matchId }: { matchId: string }) => {
   const [homePlayersExtended, setHomePlayersExtended] = useState<Player[]>([]);
   const [awayPlayersExtended, setAwayPlayersExtended] = useState<Player[]>([]);
   const [highestRating, setHighestRating] = useState<number>(0);
+  const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null); // 선택된 선수 정보
+  const [isModalOpen, setModalOpen] = useState<boolean>(false); // 모달 상태
+
+  const matchData = useRecoilValue(matchDataState(matchId));
 
   useEffect(() => {
+    if (!matchData) return;
+
+    const { homeTeam, awayTeam } = matchData;
+
     const fetchPlayerAndSeasonData = async () => {
       const [spidsResponse, seasonsResponse] = await Promise.all([
         getPlayerMeta(),
@@ -131,7 +79,71 @@ export default function Squad({ data }: SquadProps) {
     };
 
     fetchPlayerAndSeasonData();
-  }, [homeTeam.player, awayTeam.player]);
+  }, [matchData]);
+
+  const handlePlayerClick = (player: Player) => {
+    setSelectedPlayer(player); // 선택한 선수 정보를 저장
+    setModalOpen(true); // 모달 열기
+  };
+
+  // 선택된 매치가 없을 경우 처리
+  if (!matchData) {
+    return <div>선택된 매치가 없습니다.</div>;
+  }
+
+  const renderPlayer = (
+    player: Player,
+    index: number,
+    team: "home" | "away",
+    highestRating: number
+  ) => {
+    const pId = player.spId.toString().slice(3);
+    const trimmedPId = Number(pId);
+    const playerImageUrl = `https://fco.dn.nexoncdn.co.kr/live/externalAssets/common/players/p${trimmedPId}.png`;
+
+    const ratingClass =
+      player.status.spRating === 0
+        ? "rating-black"
+        : player.status.spRating && player.status.spRating < 5
+        ? "rating-red"
+        : player.status.spRating && player.status.spRating < 7
+        ? "rating-orange"
+        : player.status.spRating && player.status.spRating >= 7
+        ? "rating-green"
+        : "";
+
+    const isHighestRating = player.status.spRating === highestRating;
+
+    return (
+      <button
+        key={index}
+        className="player"
+        onClick={() => {
+          handlePlayerClick(player);
+        }}
+      >
+        <figure>
+          <img
+            src={playerImageUrl}
+            alt={`Player ${player.spId}`}
+            onError={(event) => {
+              const target = event.target as HTMLImageElement;
+              target.src = "/default_silhouette_player.png";
+            }}
+          />
+          <span
+            className={`playerRating ${ratingClass} ${
+              isHighestRating ? "rating-blue" : ""
+            }`}
+          >
+            {player.status.spRating}
+          </span>
+        </figure>
+
+        <p>{shortenName(player.playerName)}</p>
+      </button>
+    );
+  };
 
   const renderCells = () => {
     const cells = [];
@@ -183,6 +195,18 @@ export default function Squad({ data }: SquadProps) {
       <div className="substitutes-left">{renderSubstitutes("home")}</div>
       <div className="pitch">{renderCells()}</div>
       <div className="substitutes-right">{renderSubstitutes("away")}</div>
+
+      {/* PlayerDetailModal 컴포넌트 불러오기 */}
+      {isModalOpen && selectedPlayer && (
+        <PlayerDetailModal
+          isOpen={isModalOpen}
+          onClose={() => setModalOpen(false)} // 모달 닫기
+          player={selectedPlayer} // 선택된 선수 데이터 전달
+          
+        />
+      )}
     </section>
   );
-}
+};
+
+export default Squad;

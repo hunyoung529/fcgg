@@ -1,34 +1,29 @@
+import React from "react";
 import { useRecoilValue } from "recoil";
-import { selectedMatchState } from "@/store/matchDetailsState"; // Recoil 상태 임포트
+import { matchDataState } from "@/store/matchDetailsState";
 
-export default function Statistics() {
-  // Recoil에서 선택된 매치 데이터 가져오기
-  const data = useRecoilValue(selectedMatchState);
+interface Stat {
+  label: string;
+  homeStat: number | string;
+  awayStat: number | string;
+}
 
-  // 선택된 매치가 없을 경우 처리
-  if (!data) {
-    return <div>선택된 매치가 없습니다.</div>;
+export default function Statistics({ matchId }: { matchId: string }) {
+  const matchData = useRecoilValue(matchDataState(matchId));
+
+  if (!matchData) {
+    return (
+      <div className="text-center p-4 text-red-500">
+        선택된 매치가 없습니다.
+      </div>
+    );
   }
 
-  const { homeTeam, awayTeam } = data;
+  const { homeTeam, awayTeam } = matchData;
 
-  if (!homeTeam || !awayTeam) {
-    return <div>유효하지 않은 매치 데이터입니다.</div>;
-  }
-
-  const homePassSuccess = homeTeam.pass.passSuccess;
-  const homePassTry = homeTeam.pass.passTry;
-  const homePassPercentage =
-    homePassTry > 0 ? ((homePassSuccess / homePassTry) * 100).toFixed(1) : 0;
-
-  const awayPassSuccess = awayTeam.pass.passSuccess;
-  const awayPassTry = awayTeam.pass.passTry;
-  const awayPassPercentage =
-    awayPassTry > 0 ? ((awayPassSuccess / awayPassTry) * 100).toFixed(1) : 0;
-
-  const stats = [
+  const stats: Stat[] = [
     {
-      label: "전체슛",
+      label: "전체 슛",
       homeStat: homeTeam.shoot.shootTotal,
       awayStat: awayTeam.shoot.shootTotal,
     },
@@ -38,58 +33,36 @@ export default function Statistics() {
       awayStat: awayTeam.shoot.effectiveShootTotal,
     },
     {
-      label: "정확한 패스",
-      homeStat:
-        homePassSuccess != null
-          ? `${homePassSuccess} (${homePassPercentage}%)`
-          : "몰수패",
-      awayStat:
-        awayPassSuccess != null
-          ? `${awayPassSuccess} (${awayPassPercentage}%)`
-          : "몰수패",
-    },
-    {
-      label: "반칙",
+      label: "파울",
       homeStat: homeTeam.matchDetail.foul,
       awayStat: awayTeam.matchDetail.foul,
-    },
-    {
-      label: (
-        <>
-          <img
-            src="/yellowcard.png"
-            alt="옐로우카드"
-            className="inline-block w-5 h-5 mr-2"
-          />
-        </>
-      ),
-      homeStat: homeTeam.matchDetail.yellowCards,
-      awayStat: awayTeam.matchDetail.yellowCards,
-    },
-    {
-      label: (
-        <>
-          <img
-            src="/redcard.png"
-            alt="레드카드"
-            className="inline-block w-5 h-5 mr-2"
-          />
-        </>
-      ),
-      homeStat: homeTeam.matchDetail.redCards,
-      awayStat: awayTeam.matchDetail.redCards,
     },
     {
       label: "코너킥",
       homeStat: homeTeam.matchDetail.cornerKick,
       awayStat: awayTeam.matchDetail.cornerKick,
     },
+    {
+      label: "오프사이드",
+      homeStat: homeTeam.matchDetail.offsideCount,
+      awayStat: awayTeam.matchDetail.offsideCount,
+    },
+    {
+      label: "경고",
+      homeStat: homeTeam.matchDetail.yellowCards,
+      awayStat: awayTeam.matchDetail.yellowCards,
+    },
+    {
+      label: "퇴장",
+      homeStat: homeTeam.matchDetail.redCards,
+      awayStat: awayTeam.matchDetail.redCards,
+    },
   ];
 
   return (
-    <div className="">
-      <p className="text-center mt-5 ">공 점유율</p>
-      <div className="flex h-2 rounded-xl overflow-hidden mt-5">
+    <div className="bg-gray-900 text-white p-4 rounded-lg">
+      <p className="text-center mt-5 text-xl font-bold">공 점유율</p>
+      <div className="flex h-8 rounded-xl overflow-hidden mt-5">
         <div
           style={{
             width: `${homeTeam.matchDetail.possession}%`,
@@ -97,14 +70,18 @@ export default function Statistics() {
               homeTeam.matchDetail.possession > awayTeam.matchDetail.possession
                 ? "#d3171e"
                 : "white",
-            color:
-              homeTeam.matchDetail.possession > awayTeam.matchDetail.possession
-                ? "white"
-                : "black",
           }}
-          className="text-white p-1 text-left pl-7"
+          className="flex items-center justify-start pl-2 text-sm"
         >
-          {homeTeam.matchDetail.possession}%
+          <span
+            className={
+              homeTeam.matchDetail.possession > awayTeam.matchDetail.possession
+                ? "text-white"
+                : "text-black"
+            }
+          >
+            {homeTeam.matchDetail.possession}%
+          </span>
         </div>
         <div
           style={{
@@ -113,22 +90,29 @@ export default function Statistics() {
               awayTeam.matchDetail.possession > homeTeam.matchDetail.possession
                 ? "#d3171e"
                 : "white",
-            color:
-              awayTeam.matchDetail.possession > homeTeam.matchDetail.possession
-                ? "white"
-                : "black",
           }}
-          className="bg-gray-300 p-1 text-right pr-7"
+          className="flex items-center justify-end pr-2 text-sm"
         >
-          {awayTeam.matchDetail.possession}%
+          <span
+            className={
+              awayTeam.matchDetail.possession > homeTeam.matchDetail.possession
+                ? "text-white"
+                : "text-black"
+            }
+          >
+            {awayTeam.matchDetail.possession}%
+          </span>
         </div>
       </div>
-      <ul className="mt-5">
+      <ul className="mt-5 space-y-2">
         {stats.map(({ label, homeStat, awayStat }, index) => (
-          <li key={index} className="flex justify-between items-center p-1">
-            <div className="w-[10%] text-center ">{homeStat}</div>
-            <span>{label}</span>
-            <div className="w-[10%] text-center">{awayStat}</div>
+          <li
+            key={index}
+            className="flex justify-between items-center p-1 bg-gray-800 rounded"
+          >
+            <div className="w-[15%] text-center text-blue-400">{homeStat}</div>
+            <span className="flex-grow text-center">{label}</span>
+            <div className="w-[15%] text-center text-red-400">{awayStat}</div>
           </li>
         ))}
       </ul>

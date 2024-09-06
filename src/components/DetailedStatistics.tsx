@@ -1,18 +1,23 @@
 "use client";
 import { useState } from "react";
-import { TeamMatchInfo } from "../utils/matchDetailsConvert";
 import {
   OtherStatistics,
   PassStatistics,
   ShootStatistics,
 } from "./DetailStats";
+import { matchDataState } from "@/store/matchDetailsState";
+import { useRecoilValue } from "recoil";
 
-interface DetailStatisticsProps {
-  data: TeamMatchInfo;
-}
-export default function DetailedStatistics({ data }: DetailStatisticsProps) {
+export default function DetailedStatistics({ matchId }: { matchId: string }) {
+  const matchData = useRecoilValue(matchDataState(matchId)); // matchId로 매치 데이터를 가져옴
   const [selectedTab, setSelectedTab] = useState("shoot");
-  const { homeTeam, awayTeam } = data;
+  console.log(matchData);
+  // 선택된 매치가 없을 경우 처리
+  if (!matchData) {
+    return <div className="text-center p-4">선택된 매치가 없습니다.</div>;
+  }
+
+  const { homeTeam, awayTeam } = matchData;
   const selectedStatistics = () => {
     switch (selectedTab) {
       case "shoot":

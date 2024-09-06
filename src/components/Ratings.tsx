@@ -7,18 +7,20 @@ import {
 } from "@/utils/matchDetailsConvert";
 import { getPlayerMeta, getSeasonMeta } from "@/utils/api";
 import Image from "next/image";
+import { useRecoilValue } from "recoil";
+import { matchDataState } from "@/store/matchDetailsState";
 
-interface RatingsProps {
-  data: TeamMatchInfo;
-}
+export default function Ratings({ matchId }: { matchId: string }) {
+  const matchData = useRecoilValue(matchDataState(matchId)); // matchId로 매치 데이터를 가져옴
 
-export default function Ratings({ data }: RatingsProps) {
-  const { homeTeam, awayTeam } = data;
-
+  // State 초기화
   const [homePlayersExtended, setHomePlayersExtended] = useState<Player[]>([]);
   const [awayPlayersExtended, setAwayPlayersExtended] = useState<Player[]>([]);
 
   useEffect(() => {
+    // 데이터가 없으면 바로 return
+    if (!matchData || !matchData.homeTeam || !matchData.awayTeam) return;
+
     const fetchPlayerAndSeasonData = async () => {
       const [spidsResponse, seasonsResponse] = await Promise.all([
         getPlayerMeta(),
@@ -47,12 +49,18 @@ export default function Ratings({ data }: RatingsProps) {
           .sort((a, b) => a.spPosition - b.spPosition);
       };
 
-      setHomePlayersExtended(extendPlayerInfo(homeTeam.player));
-      setAwayPlayersExtended(extendPlayerInfo(awayTeam.player));
+      // homeTeam과 awayTeam의 player 정보를 처리
+      setHomePlayersExtended(extendPlayerInfo(matchData.homeTeam.player));
+      setAwayPlayersExtended(extendPlayerInfo(matchData.awayTeam.player));
     };
 
     fetchPlayerAndSeasonData();
-  }, [homeTeam.player, awayTeam.player]);
+  }, [matchData]); // data 변경 시에만 effect 실행
+
+  // 선택된 매치가 없을 경우 처리
+  if (!matchData) {
+    return <div>선택된 매치가 없습니다.</div>;
+  }
 
   return (
     <div className="flex mx-auto justify-between my-5 items-center w-[70%] h-auto">
@@ -69,7 +77,7 @@ export default function Ratings({ data }: RatingsProps) {
               />
             )}
             <p className="text-left flex-grow-2">{player.playerName}</p>
-            <span className="text-left w-[8%]">{player.status.spRating}</span>
+            <span className="text-left w-[8%]">{player.status?.spRating}</span>
           </li>
         ))}
       </ul>
@@ -86,7 +94,7 @@ export default function Ratings({ data }: RatingsProps) {
               />
             )}
             <p className="text-left flex-grow-2">{player.playerName}</p>
-            <span className="text-left w-[8%]">{player.status.spRating}</span>
+            <span className="text-left w-[8%]">{player.status?.spRating}</span>
           </li>
         ))}
       </ul>

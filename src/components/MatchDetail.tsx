@@ -1,66 +1,47 @@
-import React, { useState } from "react";
-import useMatchData from "@/hooks/useMatchData";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { matchDataState, matchActiveState } from "@/store/matchDetailsState";
+import Image from "next/image";
+import Statistics from "./Statistics";
+import DetailedStatistics from "./DetailedStatistics";
 import Ratings from "./Ratings";
 import Squad from "./Squad";
-import DetailedStatistics from "./DetailedStatistics";
-import Statistics from "./Statistics";
-import { TeamMatchInfo } from "@/utils/matchDetailsConvert";
-import Image from "next/image";
-import { useRecoilState } from "recoil";
-import { selectedMatchState } from "@/store/matchDetailsState";
+import { useState } from "react";
+import useMatchData from "@/hooks/useMatchData"; // useMatchData 훅을 사용
 
 interface MatchDetailProps {
-  matchData: TeamMatchInfo;
+  matchId: string;
 }
 
-export default function MatchDetail({ matchData }: MatchDetailProps) {
-  const [selectedMatch, setSelectedMatch] = useRecoilState(selectedMatchState);
-  const [isActive, setIsActive] = useState(false);
+export default function MatchDetail({ matchId }: MatchDetailProps) {
+  const matchData = useRecoilValue(matchDataState(matchId)); // matchId로 매치 데이터를 가져옴
+  const isActive = useRecoilValue(matchActiveState(matchId)); // 활성화 상태 가져오기
+  const setActive = useSetRecoilState(matchActiveState(matchId)); // 활성화 상태 설정 함수
+  const [selectedTab, setSelectedTab] = useState("statistics"); // 기본적으로 'statistics' 탭이 선택됨
 
-  // 매치 활성화/비활성화와 선택된 매치 설정
+  // useMatchData 훅으로 데이터를 가져옴
+  const { homeTeam, awayTeam, relativeTime, detailedDate, homeIcon, awayIcon } =
+    useMatchData(matchData); // matchData를 훅에 전달
+
+  if (!matchData) return null; // 매치 데이터가 없으면 아무것도 렌더링하지 않음
+
+  // 활성화 상태 토글 함수
   const toggleActive = () => {
-    setIsActive(!isActive); // isActive 상태를 반대로 변경
-    setSelectedMatch(selectedMatch === matchData ? null : matchData); // 선택된 매치 설정
+    setActive((prev: boolean) => !prev); // 활성화 상태를 토글
   };
-  const {
-    homeTeam,
-    awayTeam,
-    relativeTime,
-    detailedDate,
-    selectedTab,
-    setSelectedTab,
-    homeIcon,
-    awayIcon,
-  } = useMatchData(matchData);
 
+  // 선택된 탭에 맞는 콘텐츠 렌더링 함수
   const selectedContent = () => {
     switch (selectedTab) {
-      case "statistics":
-        return <Statistics />;
-      // case "detailedStatistics":
-      //   return <DetailedStatistics  />;
-      // case "ratings":
-      //   return <Ratings />;
-      // case "squad":
-      //   return <Squad  />;
+      case "detailedStatistics":
+        return <DetailedStatistics matchId={matchId} />; // 세부 통계 컴포넌트
+      case "ratings":
+        return <Ratings matchId={matchId} />; // 평점 컴포넌트
+      case "squad":
+        return <Squad matchId={matchId} />; // 스쿼드 컴포넌트
       default:
-        return null;
+        return <Statistics matchId={matchId} />;
     }
   };
-
-  const homeBgColor =
-    homeTeam.matchDetail.matchResult === "승"
-      ? "bg-win"
-      : homeTeam.matchDetail.matchResult === "패"
-      ? "bg-lose"
-      : "bg-draw";
-
-  const awayBgColor =
-    awayTeam.matchDetail.matchResult === "승"
-      ? "bg-win"
-      : awayTeam.matchDetail.matchResult === "패"
-      ? "bg-lose"
-      : "bg-draw";
 
   return (
     <>
@@ -69,33 +50,46 @@ export default function MatchDetail({ matchData }: MatchDetailProps) {
           {relativeTime}
         </p>
         <div className="flex justify-between w-[70%] items-center">
-          <span className={`${homeBgColor} p-1 rounded`}>
-            {homeTeam.matchDetail.matchResult}
+          <span
+            className={`p-1 rounded ${
+              homeTeam?.matchDetail.matchResult === "승" ? "bg-win" : "bg-lose"
+            }`}
+          >
+            {homeTeam?.matchDetail.matchResult}
           </span>
           <div className="flex items-center justify-center gap-1 w-1/4 text-center">
-            <span>{homeTeam.nickname}</span>
-            <Image src={homeIcon} alt="HomeController" width={28} height={28} />
+            <span>{homeTeam?.nickname}</span>
+            <Image src={homeIcon} alt="Home Icon" width={28} height={28} />
           </div>
           <div className="w-[10%] text-center">
-            <span>{homeTeam.shoot.goalTotal}</span>
+            <span>{homeTeam?.shoot.goalTotal}</span>
             <span className="mx-1 rounded">:</span>
-            <span>{awayTeam.shoot.goalTotal}</span>
+            <span>{awayTeam?.shoot.goalTotal}</span>
           </div>
           <div className="flex items-center justify-center gap-1 w-1/4 text-center">
-            <span>{awayTeam.nickname}</span>
-            <Image src={awayIcon} alt="HomeController" width={28} height={28} />
+            <span>{awayTeam?.nickname}</span>
+            <Image src={awayIcon} alt="Away Icon" width={28} height={28} />
           </div>
-          <span className={`${awayBgColor} p-1 rounded`}>
-            {awayTeam.matchDetail.matchResult}
+          <span
+            className={`p-1 rounded ${
+              awayTeam?.matchDetail.matchResult === "승" ? "bg-win" : "bg-lose"
+            }`}
+          >
+            {awayTeam?.matchDetail.matchResult}
           </span>
         </div>
         <div className="w-[15%] ml-auto text-right">
-          <button onClick={toggleActive}>더보기</button>
+          <button onClick={toggleActive}>
+            {isActive ? "숨기기" : "더보기"}
+          </button>
         </div>
       </div>
+
+      {/* 활성화 상태일 경우 상세 정보 표시 */}
       {isActive && (
-        <div className="min-h-50v w-full mx-auto text-whiteb bg-black">
-          <div className="flex justify-between w-[60%] mx-auto">
+        <div className="min-h-50v w-full mx-auto text-white bg-black">
+          <div className="flex justify-between w-[60%] mx-auto p-4">
+            {/* 탭 버튼 */}
             <button onClick={() => setSelectedTab("statistics")}>
               주요통계
             </button>
@@ -105,6 +99,7 @@ export default function MatchDetail({ matchData }: MatchDetailProps) {
             <button onClick={() => setSelectedTab("ratings")}>평점</button>
             <button onClick={() => setSelectedTab("squad")}>스쿼드</button>
           </div>
+          {/* 선택된 탭의 콘텐츠 렌더링 */}
           {selectedContent()}
         </div>
       )}
