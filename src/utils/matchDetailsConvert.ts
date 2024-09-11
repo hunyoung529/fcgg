@@ -71,7 +71,7 @@ export interface Status {
   dribbleTry: number;
   dribbleSuccess: number;
   ballPossesionTry: number;
-  ballPossesionSuc: number;
+  ballPossesionSuccess: number;
   aerialTry: number;
   aerialSuccess: number;
   blockTry: number;

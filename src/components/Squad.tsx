@@ -118,6 +118,7 @@ const Squad = ({ matchId }: { matchId: string }) => {
       <button
         key={index}
         className="player"
+        aria-label="선수"
         onClick={() => {
           handlePlayerClick(player);
         }}
@@ -202,7 +203,6 @@ const Squad = ({ matchId }: { matchId: string }) => {
           isOpen={isModalOpen}
           onClose={() => setModalOpen(false)} // 모달 닫기
           player={selectedPlayer} // 선택된 선수 데이터 전달
-          
         />
       )}
     </section>
