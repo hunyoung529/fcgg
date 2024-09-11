@@ -14,6 +14,17 @@ export const metadata: Metadata = {
   verification: {
     google: "YUSMRC-SUV_pdgRNMWSpjYUCfeHNgVMWNuwS64AHink",
   },
+  keywords: [
+    "FC온라인",
+    "FC온라인 전적",
+    "FC온라인 통계",
+    "전적 검색",
+    "FC온라인 전적 검색",
+    "FIFA 온라인",
+    "피온",
+    "피파온라인",
+    "피온 전적검색",
+  ],
 };
 
 export default function RootLayout({
