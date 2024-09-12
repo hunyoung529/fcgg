@@ -2,8 +2,13 @@ export function getTimeDifference(dateString: string) {
   const now = new Date();
   const past = new Date(dateString);
 
-  // UTC 시간을 KST로 변환
-  const kstPast = new Date(past.getTime() + 9 * 60 * 60 * 1000);
+  // UTC 시간을 KST로 변환 (이미 KST로 변환된 값이 아니라면)
+  const kstOffset = 9 * 60 * 60 * 1000; // KST는 UTC+9
+  const kstPast =
+    past.getTimezoneOffset() === 0
+      ? new Date(past.getTime() + kstOffset)
+      : past;
+  // getTimezoneOffset() === 0일 때만 KST로 변환 (UTC일 때만)
 
   const differenceInSeconds = Math.floor((+now - +kstPast) / 1000);
   const differenceInMinutes = Math.floor(differenceInSeconds / 60);

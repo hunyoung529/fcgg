@@ -99,7 +99,12 @@ const Squad = ({ matchId }: { matchId: string }) => {
   ) => {
     const pId = player.spId.toString().slice(3);
     const trimmedPId = Number(pId);
-    const playerImageUrl = `https://fco.dn.nexoncdn.co.kr/live/externalAssets/common/players/p${trimmedPId}.png`;
+
+    // spId가 289049072인 경우에는 특별한 URL을 사용
+    const playerImageUrl =
+      player.spId === 289049072
+        ? `https://fco.dn.nexoncdn.co.kr/live/externalAssets/common/playersAction/p289049072.png`
+        : `https://fco.dn.nexoncdn.co.kr/live/externalAssets/common/players/p${trimmedPId}.png`;
 
     const ratingClass =
       player.status.spRating === 0

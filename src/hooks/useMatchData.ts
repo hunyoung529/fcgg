@@ -19,7 +19,6 @@ const useMatchData = (matchData: TeamMatchInfo | undefined) => {
   }
 
   const { matchDate, homeTeam, awayTeam } = matchData;
-
   const relativeTime = getTimeDifference(matchDate);
   const detailedDate = formatDate(matchDate);
 

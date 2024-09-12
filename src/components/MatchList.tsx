@@ -3,30 +3,21 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import MatchDetail from "./MatchDetail";
-import { TeamMatchInfo } from "@/utils/matchDetailsConvert";
-import { useSetRecoilState, useRecoilValue } from "recoil";
+import { useRecoilValue } from "recoil";
 import { matchListState } from "@/store/matchDetailsState";
 
 interface MatchListProps {
   selectedMatchType: string;
   userId: string;
-  matchDetails: TeamMatchInfo[];
 }
 
 export default function MatchList({
   selectedMatchType,
   userId,
-  matchDetails,
 }: MatchListProps) {
   const router = useRouter();
   const [visibleMatches, setVisibleMatches] = useState(5); // 한 번에 보이는 매치 수
-  const setMatchList = useSetRecoilState(matchListState); // 전역 상태에 매치 데이터를 저장하는 함수
-  const currentMatches = useRecoilValue(matchListState); // Recoil에서 현재 매치 데이터를 가져옴
-
-  // matchDetails가 변경될 때 Recoil의 matchListState를 업데이트
-  useEffect(() => {
-    setMatchList(matchDetails);
-  }, [matchDetails, setMatchList]);
+  const currentMatches = useRecoilValue(matchListState); // Recoil에서 현재 matchList 데이터를 가져옴
 
   // 더 많은 매치를 보여주는 함수
   const loadMoreMatches = () => {

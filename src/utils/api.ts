@@ -43,7 +43,13 @@ export async function getAllMatchDetails(matchIds: string[]) {
     console.error("matchIds is not an array:", matchIds);
     return [];
   }
-  const promises = matchIds.map((matchId) => getMatchDetail(matchId));
+  const promises = matchIds.map(async (matchId) => {
+    const matchDetail = await getMatchDetail(matchId);
+    return {
+      ...matchDetail,
+      fetchedAt: new Date().toISOString(), // 데이터를 가져온 시간을 포함
+    };
+  });
   const matchDetails = await Promise.all(promises);
   return matchDetails;
 }

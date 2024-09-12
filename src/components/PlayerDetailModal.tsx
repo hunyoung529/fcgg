@@ -52,11 +52,15 @@ const PlayerDetailModal = ({
   player,
 }: PlayerDetailModalProps): JSX.Element | null => {
   if (!player) return null;
-
-  const playerImageUrl = `https://fco.dn.nexoncdn.co.kr/live/externalAssets/common/playersAction/p${player.spId}.png`;
+  const pId = player.spId.toString().slice(3);
+  const trimmedPId = Number(pId);
+  // spId가 289049072인 경우에는 특별한 URL을 사용
+  const playerImageUrl =
+    player.spId === 289049072
+      ? `https://fco.dn.nexoncdn.co.kr/live/externalAssets/common/playersAction/p289049072.png`
+      : `https://fco.dn.nexoncdn.co.kr/live/externalAssets/common/players/p${trimmedPId}.png`;
 
   const backgroundColorClass = getBackgroundColor(player.status.spRating);
-  console.log(player.spPosition);
 
   //드리블 야드 미터로 변환
   const yardToMeter = (yard: number): number => {
@@ -100,11 +104,13 @@ const PlayerDetailModal = ({
                     {player.spGrade}
                   </span>
                   <div className="text-center ">
-                    <Image
-                      src={playerImageUrl || "/default_silhouette_player.png"}
+                    <img
+                      src={playerImageUrl}
                       alt={player.playerName || "Unknown Player"}
-                      width={150}
-                      height={150}
+                      onError={(event) => {
+                        const target = event.target as HTMLImageElement;
+                        target.src = "/default_silhouette_player.png";
+                      }}
                       className="object-cover rounded-full mx-auto mb-4 border-4 border-white"
                     />
 
