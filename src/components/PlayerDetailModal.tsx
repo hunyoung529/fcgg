@@ -2,11 +2,9 @@ import React from "react";
 import {
   Modal,
   ModalContent,
-  ModalHeader,
   ModalBody,
   ModalFooter,
   Button,
-  Progress,
 } from "@nextui-org/react";
 import { Player } from "@/utils/matchDetailsConvert";
 import Image from "next/image";

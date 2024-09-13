@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import MatchDetail from "./MatchDetail";
 import { useRecoilValue } from "recoil";
 import { matchListState } from "@/store/matchDetailsState";
+import MatchOverviewCard from "./MatchOverviewCard";
 
 interface MatchListProps {
   selectedMatchType: string;
@@ -23,6 +24,7 @@ export default function MatchList({
   const loadMoreMatches = () => {
     setVisibleMatches((prevVisible) => prevVisible + 10); // 매치 10개씩 추가로 보여줌
   };
+  // console.log(matchListState);
 
   return (
     <div className="mx-auto max-w-7xl">
@@ -47,7 +49,7 @@ export default function MatchList({
       >
         감독모드
       </button>
-
+      <MatchOverviewCard />
       {/* 현재 보이는 매치들만 렌더링 */}
       {currentMatches.slice(0, visibleMatches).map((match) => (
         <MatchDetail key={match.matchId} matchId={match.matchId} />

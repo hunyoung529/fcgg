@@ -25,3 +25,9 @@ export const matchActiveState = atomFamily<boolean, string>({
   key: "matchActiveState",
   default: false,
 });
+
+// OUID 상태를 관리할 Recoil 상태 생성
+export const ouidState = atom<string | null>({
+  key: "ouidState",
+  default: null,
+});

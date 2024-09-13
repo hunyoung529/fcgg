@@ -1,5 +1,6 @@
 export interface MatchInfo {
   nickname: string;
+  ouid: string;
   matchDetail: {
     seasonId: number;
     matchResult: string;
@@ -128,9 +129,10 @@ export const matchDetailsConvert = (
     console.error("Invalid index or matchInfo data", { match, index });
     return null;
   }
-  const { nickname, matchDetail, shoot, pass, defence, player } =
+  const { ouid, nickname, matchDetail, shoot, pass, defence, player } =
     match.matchInfo[index];
   return {
+    ouid,
     player,
     nickname,
     matchDetail,

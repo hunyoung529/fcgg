@@ -6,11 +6,12 @@ import {
   matchDetailsConvert,
   TeamMatchInfo,
 } from "@/utils/matchDetailsConvert";
-import { matchListState } from "@/store/matchDetailsState";
+import { matchListState, ouidState } from "@/store/matchDetailsState";
 import { getAllMatchDetails, getMatchList, getOuid } from "@/utils/api";
 import Image from "next/image";
 import { formatDate, getTimeDifference } from "@/utils/timeDefference";
 import { Button } from "@nextui-org/react";
+import { MatchInfo } from "./../../../utils/matchDetailsConvert";
 
 interface RecordClientProps {
   basicInfo: any;
@@ -38,10 +39,13 @@ export default function RecordClient({
   const setMatchList = useSetRecoilState(matchListState);
   // 5분 동안 버튼을 비활성화하기 위한 상태
   const [refreshDisabled, setRefreshDisabled] = useState(false);
+  const setOuid = useSetRecoilState(ouidState); // OUID 상태 설정
+
   // SSR에서 변환된 데이터를 Recoil 상태에 저장
   useEffect(() => {
-    setMatchList(matchDetails);
-  }, [matchDetails, setMatchList]);
+    setOuid(basicInfo.ouid); // basicInfo.ouid를 Recoil 상태에 저장
+    setMatchList(matchDetails); // SSR에서 받은 matchDetails 설정
+  }, [basicInfo.ouid, matchDetails, setMatchList, setOuid]);
 
   // 전적 갱신 시 데이터를 변환하여 Recoil 상태에 저장
   const handleRefresh = async () => {
@@ -50,8 +54,7 @@ export default function RecordClient({
     setTimeout(() => setRefreshDisabled(false), 5 * 60 * 1000); // 5분 후 버튼 활성화
 
     try {
-      const ouid = await getOuid(userId);
-      const matchIds = await getMatchList(matchtype, ouid);
+      const matchIds = await getMatchList(matchtype, basicInfo.ouid);
       const newMatchDetails = await getAllMatchDetails(matchIds);
 
       const transformedMatchDetails: TeamMatchInfo[] = newMatchDetails.reduce(
