@@ -19,8 +19,22 @@ const useMatchData = (matchData: TeamMatchInfo | undefined) => {
   }
 
   const { matchDate, homeTeam, awayTeam } = matchData;
-  const relativeTime = getTimeDifference(matchDate);
-  const detailedDate = formatDate(matchDate);
+
+  const matchDateUTCString = matchDate + "Z";
+  const matchDateObj = new Date(matchDateUTCString);
+
+  // matchDateObj가 유효한지 확인
+  if (isNaN(matchDateObj.getTime())) {
+    console.error("Invalid matchDate:", matchDate);
+  }
+
+  const relativeTime = getTimeDifference(matchDateObj);
+  const detailedDate = formatDate(matchDateObj);
+  console.log("matchDate", matchDate);
+  console.log("matchDateObj", matchDateObj);
+
+  console.log("경기 시간전", relativeTime);
+  console.log("경기 시간", detailedDate);
 
   const homeController = homeTeam?.matchDetail?.controller ?? "";
   const awayController = awayTeam?.matchDetail?.controller ?? "";

@@ -88,12 +88,13 @@ export default function RecordClient({
   };
 
   const relativeTime = updatedTime
-    ? getTimeDifference(updatedTime.toISOString())
-    : "업데이트 없음";
-  const detailedDate = updatedTime
-    ? formatDate(updatedTime.toISOString())
+    ? getTimeDifference(updatedTime)
     : "업데이트 없음";
 
+  const detailedDate = updatedTime ? formatDate(updatedTime) : "업데이트 없음";
+
+  console.log("레코드 시간전", relativeTime);
+  console.log("레코드 시간", detailedDate);
   return (
     <>
       <section className="bg-[#34495e] rounded max-w-7xl flex items-center justify-between mx-auto p-2">
