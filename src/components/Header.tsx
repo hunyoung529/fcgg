@@ -18,7 +18,7 @@ export default function Header() {
   };
 
   return (
-    <header className="h-10v flex items-center justify-between max-w-7xl mx-auto">
+    <header className="h-10v  flex items-center justify-between max-w-7xl mx-auto max-[600px]:max-w-[600px] max-[600px]:flex-col max-[600px]:mb-2">
       <Link
         href="/"
         className="text-4xl text-[#0aff60] ml-5  font-logo font-bold "
@@ -26,14 +26,14 @@ export default function Header() {
         ADARI
       </Link>
       {!isMainPage && (
-        <form className="space-y-4 w-[20%]" onSubmit={onSubmit}>
+        <form className="space-y-4 w-[320px]" onSubmit={onSubmit}>
           <div className="flex items-center space-x-2">
             <input
               placeholder="구단주명"
               type="text"
               name="userId"
               required
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full min-w-[200px] p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             />
             <button
               type="submit"

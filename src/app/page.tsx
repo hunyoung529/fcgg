@@ -16,7 +16,7 @@ export default function Home() {
 
   return (
     <>
-      <div className="bg-white rounded-lg shadow p-6 w-6/12 flex flex-col items-center justify-center mx-auto my-12 min-w-[640px]">
+      <div className="bg-white rounded-lg shadow p-6 w-full flex flex-col items-center justify-center mx-auto my-12 max-w-[640px] max-[400px]:p-3">
         <form className="space-y-4 w-full" onSubmit={onSubmit}>
           <div className="flex items-center space-x-2">
             <input
@@ -28,22 +28,19 @@ export default function Home() {
             />
             <button
               type="submit"
-              className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
-              style={{ minWidth: 100, marginBottom: 0 }}
+              className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700 w-20"
+              style={{ marginBottom: 0 }}
             >
               검색
             </button>
           </div>
         </form>
       </div>
-      <div
-        className="bg-white rounded-lg shadow px-6 py-4 w-6/12 mx-auto my-8"
-        style={{ minWidth: 640 }}
-      >
-        <h2 className="text-gray-900 text-lg font-semibold mb-2">
+      <div className="bg-white rounded-lg shadow px-6 py-4 w-full mx-auto my-8 max-w-[640px] max-[400px]:p-3">
+        <h2 className="text-gray-900 text-lg max-[400px]:text-sm font-semibold mb-2">
           구단주명으로 전적을 검색해보세요. 예: 리바이브인호, KDF김시경
         </h2>
-        <h2 className="text-gray-900 text-lg font-semibold">
+        <h2 className="text-gray-900 text-lg max-[400px]:text-sm font-semibold">
           구단주명 검색 사이트:
           <a
             href="https://fconline.nexon.com/datacenter/rank"
